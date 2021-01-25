@@ -3,8 +3,11 @@ package ble
 import (
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
@@ -33,6 +36,10 @@ func (sr *StatusResponse) Unmarshal(b []byte) error {
 
 // GetStatus sends a GetStatus message to the vector robot
 func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
+	if !v.state.authorized {
+		return nil, errors.New(errNotAuthorized)
+	}
+
 	var (
 		msg []byte
 		err error
@@ -42,7 +49,9 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 	case rtsV2:
 		msg, err = rts2.BuildStatusMessage()
 	case rtsV3:
+		msg, err = rts3.BuildStatusMessage()
 	case rtsV4:
+		msg, err = rts4.BuildStatusMessage()
 	case rtsV5:
 		msg, err = rts5.BuildStatusMessage()
 	}
@@ -65,6 +74,40 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 
 func handleRST2StatusResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
 	r := msg.GetRtsStatusResponse2()
+
+	ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+	sr := StatusResponse{
+		WifiSSID:      string(ssid),
+		Version:       r.Version,
+		WifiState:     int(r.WifiState),
+		AccessPoint:   r.AccessPoint,
+		OtaInProgress: r.OtaInProgress,
+	}
+
+	b, err := sr.Marshal()
+	return b, false, err
+}
+
+func handleRST3StatusResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
+	r := msg.GetRtsStatusResponse3()
+
+	ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+	sr := StatusResponse{
+		WifiSSID:      string(ssid),
+		Version:       r.Version,
+		WifiState:     int(r.WifiState),
+		AccessPoint:   r.AccessPoint,
+		OtaInProgress: r.OtaInProgress,
+	}
+
+	b, err := sr.Marshal()
+	return b, false, err
+}
+
+func handleRST4StatusResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
+	r := msg.GetRtsStatusResponse4()
 
 	ssid, _ := hex.DecodeString(r.WifiSsidHex)
 

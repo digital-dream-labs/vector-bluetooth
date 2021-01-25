@@ -3,7 +3,8 @@ package ble
 import (
 	"encoding/json"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
@@ -46,12 +47,12 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 	)
 
 	switch v.ble.Version {
-	case rtsV2:
-		msg, err = rts2.BuildOTACancelMessage()
 	case rtsV3:
+		msg, err = rts3.BuildAuthMessage(key)
 	case rtsV4:
+		msg, err = rts4.BuildAuthMessage(key)
 	case rtsV5:
-		msg, err = rts5.BuildOTACancelMessage()
+		msg, err = rts5.BuildAuthMessage(key)
 	}
 	if err != nil {
 		return nil, err
@@ -71,8 +72,40 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 	return &resp, err
 }
 
+func handleRST3CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
+	m := msg.GetRtsCloudSessionResponse()
+
+	v.state.clientGUID = m.ClientTokenGuid
+
+	resp := AuthResponse{
+		Status:          AuthStatus(m.StatusCode),
+		ClientTokenGUID: m.ClientTokenGuid,
+		Success:         m.Success,
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
+func handleRST4CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
+	m := msg.GetRtsCloudSessionResponse()
+
+	v.state.clientGUID = m.ClientTokenGuid
+
+	resp := AuthResponse{
+		Status:          AuthStatus(m.StatusCode),
+		ClientTokenGUID: m.ClientTokenGuid,
+		Success:         m.Success,
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
 func handleRST5CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
 	m := msg.GetRtsCloudSessionResponse()
+
+	v.state.clientGUID = m.ClientTokenGuid
 
 	resp := AuthResponse{
 		Status:          AuthStatus(m.StatusCode),

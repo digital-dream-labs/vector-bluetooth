@@ -17,7 +17,12 @@ type VectorBLE struct {
 type state struct {
 	nonceResponse []byte
 	authorized    bool
+	clientGUID    string
 }
+
+const (
+	errNotAuthorized = "your vector does not have an authorized bluetooth connection"
+)
 
 // New returns a new Vector
 func New(name string, adapt *bluetooth.Adapter) (*VectorBLE, error) {

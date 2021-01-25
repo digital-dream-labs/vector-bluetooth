@@ -35,20 +35,47 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				}
 
 				switch m.Tag() {
+
 				case rts.RtsConnectionTag_Error:
+
 				case rts.RtsConnectionTag_RtsConnection2:
 					fmt.Println(m.GetRtsConnection2().Tag())
-					f := rts2Handlers[m.GetRtsConnection2().Tag()]
+					f, ok := rts2Handlers[m.GetRtsConnection2().Tag()]
+					if !ok {
+						cont = false
+						err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection2().Tag())
+					}
 					resp, cont, err = f(v, m.GetRtsConnection2())
+
 				case rts.RtsConnectionTag_RtsConnection3:
+					f, ok := rts3Handlers[m.GetRtsConnection3().Tag()]
+					if !ok {
+						cont = false
+						err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection3().Tag())
+					}
+					resp, cont, err = f(v, m.GetRtsConnection3())
+
 				case rts.RtsConnectionTag_RtsConnection4:
+					f, ok := rts4Handlers[m.GetRtsConnection4().Tag()]
+					if !ok {
+						cont = false
+						err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection4().Tag())
+					}
+					resp, cont, err = f(v, m.GetRtsConnection4())
+
 				case rts.RtsConnectionTag_RtsConnection5:
 					fmt.Println(m.GetRtsConnection5().Tag())
-					f := rts5Handlers[m.GetRtsConnection5().Tag()]
+					f, ok := rts5Handlers[m.GetRtsConnection5().Tag()]
+					if !ok {
+						cont = false
+						err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection5().Tag())
+					}
 					resp, cont, err = f(v, m.GetRtsConnection5())
+
 				case rts.RtsConnectionTag_INVALID:
 					cont = false
 					err = errors.New("invalid message")
+
 				default:
 					cont = false
 					err = errors.New("unsupported message version")

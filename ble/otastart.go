@@ -2,8 +2,11 @@ package ble
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
@@ -24,7 +27,11 @@ func (sr *OTAStartResponse) Unmarshal(b []byte) error {
 }
 
 // OTAStart sends a OTAStart message to the vector robot
-func (v *VectorBLE) OTAStart(string) (*OTAStartResponse, error) {
+func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
+	if !v.state.authorized {
+		return nil, errors.New(errNotAuthorized)
+	}
+
 	var (
 		msg []byte
 		err error
@@ -32,9 +39,11 @@ func (v *VectorBLE) OTAStart(string) (*OTAStartResponse, error) {
 
 	switch v.ble.Version {
 	case rtsV2:
-		msg, err = rts2.BuildWifiScanMessage()
+		msg, err = rts2.BuildOTAStartMessage(url)
 	case rtsV3:
+		msg, err = rts3.BuildOTAStartMessage(url)
 	case rtsV4:
+		msg, err = rts4.BuildOTAStartMessage(url)
 	case rtsV5:
 		msg, err = rts5.BuildWifiScanMessage()
 	}
@@ -57,6 +66,28 @@ func (v *VectorBLE) OTAStart(string) (*OTAStartResponse, error) {
 }
 
 func handleRST2OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
+	m := msg.GetRtsOtaUpdateResponse()
+
+	resp := OTAStartResponse{
+		Status: int(m.Status),
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
+func handleRST3OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
+	m := msg.GetRtsOtaUpdateResponse()
+
+	resp := OTAStartResponse{
+		Status: int(m.Status),
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
+func handleRST4OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
 	m := msg.GetRtsOtaUpdateResponse()
 
 	resp := OTAStartResponse{

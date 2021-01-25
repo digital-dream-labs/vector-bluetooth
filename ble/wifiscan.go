@@ -3,8 +3,11 @@ package ble
 import (
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
+	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
@@ -34,6 +37,10 @@ func (sr *WifiScanResponse) Unmarshal(b []byte) error {
 
 // WifiScan sends a WifiScan message to the vector robot
 func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
+	if !v.state.authorized {
+		return nil, errors.New(errNotAuthorized)
+	}
+
 	var (
 		msg []byte
 		err error
@@ -43,7 +50,9 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 	case rtsV2:
 		msg, err = rts2.BuildWifiScanMessage()
 	case rtsV3:
+		msg, err = rts3.BuildWifiScanMessage()
 	case rtsV4:
+		msg, err = rts4.BuildWifiScanMessage()
 	case rtsV5:
 		msg, err = rts5.BuildWifiScanMessage()
 	}
@@ -67,6 +76,56 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 
 func handleRST2WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
 	m := msg.GetRtsWifiScanResponse2()
+
+	nw := []WifiNetwork{}
+
+	for _, v := range m.ScanResult {
+		ssid, _ := hex.DecodeString(v.WifiSsidHex)
+
+		tn := WifiNetwork{
+			WifiSSID:       string(ssid),
+			SignalStrength: int(v.SignalStrength),
+			Hidden:         v.Hidden,
+			AuthType:       int(v.AuthType),
+		}
+		nw = append(nw, tn)
+	}
+
+	resp := WifiScanResponse{
+		Networks: nw,
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
+func handleRST3WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
+	m := msg.GetRtsWifiScanResponse3()
+
+	nw := []WifiNetwork{}
+
+	for _, v := range m.ScanResult {
+		ssid, _ := hex.DecodeString(v.WifiSsidHex)
+
+		tn := WifiNetwork{
+			WifiSSID:       string(ssid),
+			SignalStrength: int(v.SignalStrength),
+			Hidden:         v.Hidden,
+			AuthType:       int(v.AuthType),
+		}
+		nw = append(nw, tn)
+	}
+
+	resp := WifiScanResponse{
+		Networks: nw,
+	}
+
+	b, err := resp.Marshal()
+	return b, false, err
+}
+
+func handleRST4WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
+	m := msg.GetRtsWifiScanResponse3()
 
 	nw := []WifiNetwork{}
 
