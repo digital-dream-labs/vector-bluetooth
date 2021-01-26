@@ -56,4 +56,5 @@ var rts5Handlers = map[rts.RtsConnection_5Tag]func(v *VectorBLE, msg *rts.RtsCon
 	rts.RtsConnection_5Tag_RtsWifiConnectResponse3:    handleRST5WifiConnectionResponse,
 	rts.RtsConnection_5Tag_RtsOtaUpdateResponse:       handleRST5OtaUpdateResponse,
 	rts.RtsConnection_5Tag_RtsCloudSessionResponse:    handleRST5CloudSessionResponse,
+	rts.RtsConnection_5Tag_RtsSdkProxyResponse:        handleRST5SDKProxyResponse,
 }

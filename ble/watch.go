@@ -41,6 +41,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection2().Tag())
+					continue
 				}
 				resp, cont, err = f(v, m.GetRtsConnection2())
 
@@ -49,6 +50,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection3().Tag())
+					continue
 				}
 				resp, cont, err = f(v, m.GetRtsConnection3())
 
@@ -57,6 +59,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection4().Tag())
+					continue
 				}
 				resp, cont, err = f(v, m.GetRtsConnection4())
 
@@ -65,6 +68,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection5().Tag())
+					continue
 				}
 				resp, cont, err = f(v, m.GetRtsConnection5())
 

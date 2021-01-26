@@ -41,6 +41,10 @@ func BLEShell() {
 			c.scan()
 		case "connect":
 			c.vectorConnect(args)
+		case "authorize":
+			c.auth(args)
+		case "configure":
+			c.configure()
 		case "get-status":
 			c.getStatus()
 		case "wifi-scan":
@@ -52,6 +56,5 @@ func BLEShell() {
 		default:
 			help()
 		}
-
 	}
 }

@@ -2,6 +2,7 @@ package ble
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
@@ -69,13 +70,17 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 		return nil, err
 	}
 
+	if !resp.Success {
+		return nil, errors.New("authorization failed")
+	}
+
+	v.state.clientGUID = resp.ClientTokenGUID
+
 	return &resp, err
 }
 
 func handleRST3CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
 	m := msg.GetRtsCloudSessionResponse()
-
-	v.state.clientGUID = m.ClientTokenGuid
 
 	resp := AuthResponse{
 		Status:          AuthStatus(m.StatusCode),
@@ -90,8 +95,6 @@ func handleRST3CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]b
 func handleRST4CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
 	m := msg.GetRtsCloudSessionResponse()
 
-	v.state.clientGUID = m.ClientTokenGuid
-
 	resp := AuthResponse{
 		Status:          AuthStatus(m.StatusCode),
 		ClientTokenGUID: m.ClientTokenGuid,
@@ -104,8 +107,6 @@ func handleRST4CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]b
 
 func handleRST5CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
 	m := msg.GetRtsCloudSessionResponse()
-
-	v.state.clientGUID = m.ClientTokenGuid
 
 	resp := AuthResponse{
 		Status:          AuthStatus(m.StatusCode),
