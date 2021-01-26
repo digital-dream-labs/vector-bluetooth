@@ -8,52 +8,27 @@ import (
 	"strings"
 
 	"github.com/digital-dream-labs/vector-bluetooth/ble"
-
-	"tinygo.org/x/bluetooth"
 )
 
-var adapter = bluetooth.DefaultAdapter
+type conf struct {
+	v *ble.VectorBLE
+}
 
 // BLEShell starts the bluetooth interactive shell
 func BLEShell() {
-	// Enable BLE interface.
-	_ = adapter.Enable()
-
 	// bkrt := "Vector G4T1"
 
-	var bkrt string
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Please enter the name of your robot, ie \"Vector G4T1\"")
-	for {
-		fmt.Print("-> ")
-		text, _ := reader.ReadString('\n')
-		bkrt = strings.ReplaceAll(text, "\n", "")
-		break
-	}
-
-	v, err := ble.New(bkrt, adapter)
+	v, err := ble.New()
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if err := v.SignOn(); err != nil {
-		log.Fatal(err)
+	c := conf{
+		v: v,
 	}
 
-	var key string
-	fmt.Println("Please enter the key from the screen of your vector")
-	for {
-		fmt.Print("-> ")
-		text, _ := reader.ReadString('\n')
-		key = strings.ReplaceAll(text, "\n", "")
-		break
-	}
+	reader := bufio.NewReader(os.Stdin)
 
-	if err := v.SendPin(key); err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("you are now authorized!  type \"help\" for a list of commands")
+	fmt.Println("type \"help\" for a list of commands")
 	for {
 		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
@@ -62,15 +37,21 @@ func BLEShell() {
 		)
 
 		switch args[0] {
+		case "scan":
+			c.scan()
+		case "connect":
+			c.vectorConnect(args)
 		case "get-status":
-			getStatus(v)
+			c.getStatus()
 		case "wifi-scan":
-			wifiScan(v)
+			c.wifiScan()
 		case "wifi-connect":
-			wifiConnect(v, args)
+			c.wifiConnect(args)
 		case "ota-start":
-			startOTA(v, args)
+			c.startOTA(args)
+		default:
+			help()
 		}
-	}
 
+	}
 }

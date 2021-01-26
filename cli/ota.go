@@ -4,37 +4,47 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-
-	"github.com/digital-dream-labs/vector-bluetooth/ble"
 )
 
-func startOTA(v *ble.VectorBLE, args []string) {
+func (c *conf) startOTA(args []string) {
+	if !c.v.Connected() {
+		fmt.Println("bluetooth connectivity must be established to use this command")
+	}
+
 	//nolint
 	if len(args) != 2 {
 		fmt.Println("invalid argument.  Usage is \n ota-start URL")
+		return
 	}
 
-	resp, err := v.OTAStart(args[1])
+	resp, err := c.v.OTAStart(args[1])
 	if err != nil {
 		log.Println("unable to get status: ", err)
+		return
 	}
 	data, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		log.Println("unable to get status: ", err)
+		return
 	}
 
 	fmt.Println(string(data))
 
 }
 
-func cancelOTA(v *ble.VectorBLE) {
-	resp, err := v.OTACancel()
+func (c *conf) cancelOTA() {
+	if !c.v.Connected() {
+		fmt.Println("bluetooth connectivity must be established to use this command")
+	}
+	resp, err := c.v.OTACancel()
 	if err != nil {
 		log.Println("unable to get status: ", err)
+		return
 	}
 	data, err := json.MarshalIndent(resp, "", "  ")
 	if err != nil {
 		log.Println("unable to get status: ", err)
+		return
 	}
 
 	fmt.Println(string(data))
