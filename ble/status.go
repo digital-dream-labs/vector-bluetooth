@@ -14,14 +14,14 @@ import (
 
 // StatusResponse is the unified response for status messages
 type StatusResponse struct {
-	WifiSSID      string `json:"wifi_ssid,omitempty"`
-	Version       string `json:"version,omitempty"`
-	ESN           string `json:"esn,omitempty"`
-	WifiState     int    `json:"wifi_state,omitempty"`
-	AccessPoint   bool   `json:"access_point,omitempty"`
-	OtaInProgress bool   `json:"ota_in_progress,omitempty"`
-	HasOwner      bool   `json:"has_owner,omitempty"`
-	CloudAuthed   bool   `json:"cloud_authed,omitempty"`
+	WifiSSID      string `json:"wifi_ssid"`
+	Version       string `json:"version"`
+	ESN           string `json:"esn"`
+	WifiState     int    `json:"wifi_state"`
+	AccessPoint   bool   `json:"access_point"`
+	OtaInProgress bool   `json:"ota_in_progress"`
+	HasOwner      bool   `json:"has_owner"`
+	CloudAuthed   bool   `json:"cloud_authed"`
 }
 
 // Marshal converts a StatusResponse message to bytes
