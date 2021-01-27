@@ -1,7 +1,7 @@
 package conn
 
 import (
-	"github.com/go-ble/ble"
+	"github.com/currantlabs/ble"
 )
 
 func discoverFilter() ble.AdvFilter {
@@ -18,7 +18,7 @@ func discoverFilter() ble.AdvFilter {
 func deviceFilter(device ble.Addr) ble.AdvFilter {
 	return func(a ble.Advertisement) bool {
 		for _, s := range a.Services() {
-			if s.String() == "fee3" && a.Addr().String() == device.String() {
+			if s.String() == "fee3" && a.Address().String() == device.String() {
 				return true
 			}
 		}

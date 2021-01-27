@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-ble/ble"
+	"github.com/currantlabs/ble"
 )
 
 const (
@@ -94,7 +94,7 @@ func (a *advhandler) scan(d ble.Advertisement) {
 
 		a.conn.scanresults[a.count] = scanresult{
 			name: d.LocalName(),
-			addr: d.Addr(),
+			addr: d.Address(),
 		}
 		a.count++
 	}

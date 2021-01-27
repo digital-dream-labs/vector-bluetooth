@@ -3,7 +3,7 @@ package conn
 import (
 	"context"
 
-	"github.com/go-ble/ble"
+	"github.com/currantlabs/ble"
 	"github.com/pkg/errors"
 )
 
@@ -79,7 +79,7 @@ func (c *Connection) discoverProfile() error {
 // findWriter configures the writer
 func (c *Connection) findWriter() error {
 
-	wr := c.profile.FindCharacteristic(
+	wr := c.profile.Find(
 		ble.NewCharacteristic(
 			c.writeUUID(),
 		),
@@ -87,14 +87,14 @@ func (c *Connection) findWriter() error {
 	if wr == nil {
 		return errors.New("cannot find write channel")
 	}
-	c.writer = wr
+	c.writer = wr.(*ble.Characteristic)
 
 	return nil
 }
 
 // findReader configures the reader
 func (c *Connection) findReader() error {
-	wr := c.profile.FindCharacteristic(
+	wr := c.profile.Find(
 		ble.NewCharacteristic(
 			c.readUUID(),
 		),
@@ -102,7 +102,7 @@ func (c *Connection) findReader() error {
 	if wr == nil {
 		return errors.New("cannot find read channel")
 	}
-	c.reader = wr
+	c.reader = wr.(*ble.Characteristic)
 
 	return nil
 }
@@ -124,22 +124,24 @@ func (c *Connection) subscribe(errChan chan error) {
 func (c *Connection) handleIncoming() {
 	blebuf := bleBuffer{}
 	for {
-		incoming := <-c.incoming
-		b := blebuf.receiveRawBuffer(incoming)
-		if b == nil {
-			continue
-		}
-		switch {
-		case !c.connected:
-			c.handleConnectionRequest(incoming)
-		case !c.encrypted && c.connected:
-			c.out <- b
-		case c.encrypted && c.connected:
-			buf, _ := c.Crypto.DecryptMessage(b)
-			// IDEA:  should this reset everything?
-			c.out <- buf
-		default:
-			// IDEA:  mark as not connected, encrypted, or something.
+		select {
+		case incoming := <-c.incoming:
+			b := blebuf.receiveRawBuffer(incoming)
+			if b == nil {
+				continue
+			}
+			switch {
+			case !c.connected:
+				c.handleConnectionRequest(incoming)
+			case !c.encrypted && c.connected:
+				c.out <- b
+			case c.encrypted && c.connected:
+				buf, _ := c.Crypto.DecryptMessage(b)
+				// IDEA:  should this reset everything?
+				c.out <- buf
+			default:
+				// IDEA:  mark as not connected, encrypted, or something.
+			}
 		}
 	}
 

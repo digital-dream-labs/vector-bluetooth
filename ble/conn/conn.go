@@ -1,9 +1,9 @@
 package conn
 
 import (
+	"github.com/currantlabs/ble"
+	"github.com/currantlabs/ble/examples/lib/dev"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/blecrypto"
-	"github.com/go-ble/ble"
-	"github.com/go-ble/ble/examples/lib/dev"
 	"github.com/pkg/errors"
 )
 
