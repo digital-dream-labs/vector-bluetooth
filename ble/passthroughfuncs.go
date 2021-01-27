@@ -11,3 +11,8 @@ func (v *VectorBLE) Scan() (*conn.ScanResponse, error) {
 func (v *VectorBLE) Connected() bool {
 	return v.ble.Connected()
 }
+
+// Close stops the BLE connection
+func (v *VectorBLE) Close() error {
+	return v.ble.Close()
+}
