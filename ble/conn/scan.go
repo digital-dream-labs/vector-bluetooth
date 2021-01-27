@@ -13,7 +13,7 @@ const (
 
 // ScanResponse is a list of devices the BLE adaptor has found
 type ScanResponse struct {
-	Devices []Device
+	Devices []*Device
 }
 
 // Device is a single device entity
@@ -41,7 +41,7 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 		discoverFilter(),
 	)
 
-	d := []Device{}
+	d := []*Device{}
 
 	for k, v := range c.scanresults {
 		td := Device{
@@ -49,7 +49,7 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 			Name:    v.name,
 			Address: v.addr.String(),
 		}
-		d = append(d, td)
+		d = append(d, &td)
 
 	}
 
@@ -83,6 +83,15 @@ func newADVHandler(conn *Connection) *advhandler {
 
 func (a *advhandler) scan(d ble.Advertisement) {
 	if d.Connectable() {
+
+		if a.conn.scanresults != nil {
+			for _, v := range a.conn.scanresults {
+				if v.name == d.LocalName() {
+					return
+				}
+			}
+		}
+
 		a.conn.scanresults[a.count] = scanresult{
 			name: d.LocalName(),
 			addr: d.Addr(),
