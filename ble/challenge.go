@@ -1,15 +1,49 @@
 package ble
 
 import (
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
-func handleRTS2ChallengeMessage(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	b, err := rts2.BuildChallengeResponse(msg.GetRtsChallengeMessage().Number)
+func handleRTSChallengeMessage(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+
+	var m uint32
+
+	switch v.ble.Version() {
+
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsChallengeMessage().Number
+
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsChallengeMessage().Number
+
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsChallengeMessage().Number
+
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsChallengeMessage().Number
+
+	default:
+		return handlerUnsupportedVersionError()
+
+	}
+
+	b, err := rts.BuildChallengeResponse(v.ble.Version(), m)
 	if err != nil {
 		return nil, false, err
 	}
@@ -20,58 +54,7 @@ func handleRTS2ChallengeMessage(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte,
 	return nil, true, nil
 }
 
-func handleRTS3ChallengeMessage(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	b, err := rts3.BuildChallengeResponse(msg.GetRtsChallengeMessage().Number)
-	if err != nil {
-		return nil, false, err
-	}
-
-	if err := v.ble.Send(b); err != nil {
-		return nil, false, err
-	}
-	return nil, true, nil
-}
-
-func handleRTS4ChallengeMessage(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	b, err := rts4.BuildChallengeResponse(msg.GetRtsChallengeMessage().Number)
-	if err != nil {
-		return nil, false, err
-	}
-
-	if err := v.ble.Send(b); err != nil {
-		return nil, false, err
-	}
-	return nil, true, nil
-}
-
-func handleRTS5ChallengeMessage(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	b, err := rts5.BuildChallengeResponse(msg.GetRtsChallengeMessage().Number)
-	if err != nil {
-		return nil, false, err
-	}
-
-	if err := v.ble.Send(b); err != nil {
-		return nil, false, err
-	}
-	return nil, true, nil
-}
-
-func handleRTS2ChallengeSuccessMessage(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	v.state.authorized = true
-	return nil, false, nil
-}
-
-func handleRTS3ChallengeSuccessMessage(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	v.state.authorized = true
-	return nil, false, nil
-}
-
-func handleRTS4ChallengeSuccessMessage(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	v.state.authorized = true
-	return nil, false, nil
-}
-
-func handleRTS5ChallengeSuccessMessage(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
+func handleRTSChallengeSuccessMessage(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 	v.state.authorized = true
 	return nil, false, nil
 }

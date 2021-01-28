@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
@@ -38,16 +37,16 @@ func (v *VectorBLE) SDKProxy(settings *SDKProxyRequest) (*SDKProxyResponse, erro
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	if v.ble.Version() != rtsV5 {
-		return nil, errors.New("unsupported version")
-	}
-
-	msg, _ := rts5.BuildSDKMessage(
+	msg, err := rts.BuildSDKMessage(
+		v.ble.Version(),
 		v.state.clientGUID,
 		"1",
 		settings.URLPath,
 		settings.Body,
 	)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := v.ble.Send(msg); err != nil {
 		return nil, err
@@ -63,14 +62,28 @@ func (v *VectorBLE) SDKProxy(settings *SDKProxyRequest) (*SDKProxyResponse, erro
 	return &resp, err
 }
 
-func handleRST5SDKProxyResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	m := msg.GetRtsSdkProxyResponse()
+func handleRSTSDKProxyResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+	var r *rts.RtsSdkProxyResponse
+
+	switch v.ble.Version() {
+
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		r = t.GetRtsSdkProxyResponse()
+
+	default:
+		return handlerUnsupportedVersionError()
+
+	}
 
 	resp := SDKProxyResponse{
-		MessageID:    m.MessageId,
-		StatusCode:   m.StatusCode,
-		ResponseType: m.ResponseType,
-		ResponseBody: m.ResponseBody,
+		MessageID:    r.MessageId,
+		StatusCode:   r.StatusCode,
+		ResponseType: r.ResponseType,
+		ResponseBody: r.ResponseBody,
 	}
 
 	b, err := resp.Marshal()

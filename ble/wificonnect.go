@@ -5,10 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
@@ -35,23 +31,7 @@ func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, autht
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	var (
-		msg []byte
-		err error
-	)
-
-	switch v.ble.Version() {
-	case rtsV2:
-		msg, err = rts2.BuildWifiConnectMessage(ssid, password, timeout, authtype)
-	case rtsV3:
-		msg, err = rts3.BuildWifiConnectMessage(ssid, password, timeout, authtype)
-	case rtsV4:
-		msg, err = rts4.BuildWifiConnectMessage(ssid, password, timeout, authtype)
-	case rtsV5:
-		msg, err = rts5.BuildWifiConnectMessage(ssid, password, timeout, authtype)
-	default:
-		return nil, errors.New(errInvalidVersion)
-	}
+	msg, err := rts.BuildWifiConnectMessage(v.ble.Version(), ssid, password, timeout, authtype)
 	if err != nil {
 		return nil, err
 	}
@@ -71,57 +51,76 @@ func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, autht
 
 }
 
-func handleRST2WifiConnectionResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	m := msg.GetRtsWifiConnectResponse()
+func handleRSTWifiConnectionResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+	var resp WifiConnectResponse
+	switch v.ble.Version() {
 
-	ssid, _ := hex.DecodeString(m.WifiSsidHex)
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
 
-	resp := WifiConnectResponse{
-		WifiSSID: string(ssid),
-		State:    int(m.WifiState),
-	}
+		m := t.GetRtsWifiConnectResponse()
 
-	b, err := resp.Marshal()
-	return b, false, err
-}
+		ssid, _ := hex.DecodeString(m.WifiSsidHex)
 
-func handleRST3WifiConnectionResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	m := msg.GetRtsWifiConnectResponse3()
+		resp = WifiConnectResponse{
+			WifiSSID: string(ssid),
+			State:    int(m.WifiState),
+		}
 
-	ssid, _ := hex.DecodeString(m.WifiSsidHex)
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
 
-	resp := WifiConnectResponse{
-		WifiSSID: string(ssid),
-		State:    int(m.WifiState),
-	}
+		m := t.GetRtsWifiConnectResponse3()
 
-	b, err := resp.Marshal()
-	return b, false, err
-}
+		ssid, _ := hex.DecodeString(m.WifiSsidHex)
 
-func handleRST4WifiConnectionResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	m := msg.GetRtsWifiConnectResponse3()
+		resp = WifiConnectResponse{
+			WifiSSID: string(ssid),
+			State:    int(m.WifiState),
+			Result:   int(m.ConnectResult),
+		}
 
-	ssid, _ := hex.DecodeString(m.WifiSsidHex)
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
 
-	resp := WifiConnectResponse{
-		WifiSSID: string(ssid),
-		State:    int(m.WifiState),
-	}
+		m := t.GetRtsWifiConnectResponse3()
 
-	b, err := resp.Marshal()
-	return b, false, err
-}
+		ssid, _ := hex.DecodeString(m.WifiSsidHex)
 
-func handleRST5WifiConnectionResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	m := msg.GetRtsWifiConnectResponse3()
+		resp = WifiConnectResponse{
+			WifiSSID: string(ssid),
+			State:    int(m.WifiState),
+			Result:   int(m.ConnectResult),
+		}
 
-	ssid, _ := hex.DecodeString(m.WifiSsidHex)
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
 
-	resp := WifiConnectResponse{
-		WifiSSID: string(ssid),
-		State:    int(m.WifiState),
-		Result:   int(m.ConnectResult),
+		m := t.GetRtsWifiConnectResponse3()
+
+		ssid, _ := hex.DecodeString(m.WifiSsidHex)
+
+		resp = WifiConnectResponse{
+			WifiSSID: string(ssid),
+			State:    int(m.WifiState),
+			Result:   int(m.ConnectResult),
+		}
+
+	default:
+		return handlerUnsupportedVersionError()
+
 	}
 
 	b, err := resp.Marshal()

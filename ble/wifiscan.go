@@ -5,16 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
 // WifiScanResponse is the unified response for wifi scan messages
 type WifiScanResponse struct {
-	Networks []WifiNetwork `json:"networks,omitempty"`
+	Networks []*WifiNetwork `json:"networks,omitempty"`
 }
 
 // WifiNetwork is an entry for one network
@@ -41,23 +37,7 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	var (
-		msg []byte
-		err error
-	)
-
-	switch v.ble.Version() {
-	case rtsV2:
-		msg, err = rts2.BuildWifiScanMessage()
-	case rtsV3:
-		msg, err = rts3.BuildWifiScanMessage()
-	case rtsV4:
-		msg, err = rts4.BuildWifiScanMessage()
-	case rtsV5:
-		msg, err = rts5.BuildWifiScanMessage()
-	default:
-		return nil, errors.New(errInvalidVersion)
-	}
+	msg, err := rts.BuildWifiScanMessage(v.ble.Version())
 	if err != nil {
 		return nil, err
 	}
@@ -76,96 +56,91 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 	return &resp, err
 }
 
-func handleRST2WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	m := msg.GetRtsWifiScanResponse2()
+func handleRSTWifiScanResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 
-	nw := []WifiNetwork{}
+	nw := []*WifiNetwork{}
 
-	for _, v := range m.ScanResult {
-		ssid, _ := hex.DecodeString(v.WifiSsidHex)
+	switch v.ble.Version() {
 
-		tn := WifiNetwork{
-			WifiSSID:       string(ssid),
-			SignalStrength: int(v.SignalStrength),
-			Hidden:         v.Hidden,
-			AuthType:       int(v.AuthType),
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
 		}
-		nw = append(nw, tn)
-	}
+		m := t.GetRtsWifiScanResponse2()
 
-	resp := WifiScanResponse{
-		Networks: nw,
-	}
+		for _, v := range m.ScanResult {
+			ssid, _ := hex.DecodeString(v.WifiSsidHex)
 
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST3WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	m := msg.GetRtsWifiScanResponse3()
-
-	nw := []WifiNetwork{}
-
-	for _, v := range m.ScanResult {
-		ssid, _ := hex.DecodeString(v.WifiSsidHex)
-
-		tn := WifiNetwork{
-			WifiSSID:       string(ssid),
-			SignalStrength: int(v.SignalStrength),
-			Hidden:         v.Hidden,
-			AuthType:       int(v.AuthType),
+			tn := WifiNetwork{
+				WifiSSID:       string(ssid),
+				SignalStrength: int(v.SignalStrength),
+				Hidden:         v.Hidden,
+				AuthType:       int(v.AuthType),
+			}
+			nw = append(nw, &tn)
 		}
-		nw = append(nw, tn)
-	}
 
-	resp := WifiScanResponse{
-		Networks: nw,
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST4WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	m := msg.GetRtsWifiScanResponse3()
-
-	nw := []WifiNetwork{}
-
-	for _, v := range m.ScanResult {
-		ssid, _ := hex.DecodeString(v.WifiSsidHex)
-
-		tn := WifiNetwork{
-			WifiSSID:       string(ssid),
-			SignalStrength: int(v.SignalStrength),
-			Hidden:         v.Hidden,
-			AuthType:       int(v.AuthType),
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
 		}
-		nw = append(nw, tn)
-	}
+		m := t.GetRtsWifiScanResponse3()
 
-	resp := WifiScanResponse{
-		Networks: nw,
-	}
+		for _, v := range m.ScanResult {
+			ssid, _ := hex.DecodeString(v.WifiSsidHex)
 
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST5WifiScanResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	m := msg.GetRtsWifiScanResponse3()
-
-	nw := []WifiNetwork{}
-
-	for _, v := range m.ScanResult {
-		ssid, _ := hex.DecodeString(v.WifiSsidHex)
-
-		tn := WifiNetwork{
-			WifiSSID:       string(ssid),
-			SignalStrength: int(v.SignalStrength),
-			Hidden:         v.Hidden,
-			AuthType:       int(v.AuthType),
+			tn := WifiNetwork{
+				WifiSSID:       string(ssid),
+				SignalStrength: int(v.SignalStrength),
+				Hidden:         v.Hidden,
+				AuthType:       int(v.AuthType),
+			}
+			nw = append(nw, &tn)
 		}
-		nw = append(nw, tn)
+
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m := t.GetRtsWifiScanResponse3()
+
+		for _, v := range m.ScanResult {
+			ssid, _ := hex.DecodeString(v.WifiSsidHex)
+
+			tn := WifiNetwork{
+				WifiSSID:       string(ssid),
+				SignalStrength: int(v.SignalStrength),
+				Hidden:         v.Hidden,
+				AuthType:       int(v.AuthType),
+			}
+			nw = append(nw, &tn)
+		}
+
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m := t.GetRtsWifiScanResponse3()
+
+		for _, v := range m.ScanResult {
+			ssid, _ := hex.DecodeString(v.WifiSsidHex)
+
+			tn := WifiNetwork{
+				WifiSSID:       string(ssid),
+				SignalStrength: int(v.SignalStrength),
+				Hidden:         v.Hidden,
+				AuthType:       int(v.AuthType),
+			}
+			nw = append(nw, &tn)
+		}
+
+	default:
+		return handlerUnsupportedVersionError()
+
 	}
 
 	resp := WifiScanResponse{

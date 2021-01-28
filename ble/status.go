@@ -5,10 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
@@ -40,23 +36,7 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	var (
-		msg []byte
-		err error
-	)
-
-	switch v.ble.Version() {
-	case rtsV2:
-		msg, err = rts2.BuildStatusMessage()
-	case rtsV3:
-		msg, err = rts3.BuildStatusMessage()
-	case rtsV4:
-		msg, err = rts4.BuildStatusMessage()
-	case rtsV5:
-		msg, err = rts5.BuildStatusMessage()
-	default:
-		return nil, errors.New(errInvalidVersion)
-	}
+	msg, err := rts.BuildStatusMessage(v.ble.Version())
 	if err != nil {
 		return nil, err
 	}
@@ -74,73 +54,83 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 	return &resp, err
 }
 
-func handleRST2StatusResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	r := msg.GetRtsStatusResponse2()
+func handleRSTStatusResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 
-	ssid, _ := hex.DecodeString(r.WifiSsidHex)
+	var sr StatusResponse
+	switch v.ble.Version() {
 
-	sr := StatusResponse{
-		WifiSSID:      string(ssid),
-		Version:       r.Version,
-		WifiState:     int(r.WifiState),
-		AccessPoint:   r.AccessPoint,
-		OtaInProgress: r.OtaInProgress,
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		r := t.GetRtsStatusResponse2()
+		ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+		sr = StatusResponse{
+			WifiSSID:      string(ssid),
+			Version:       r.Version,
+			WifiState:     int(r.WifiState),
+			AccessPoint:   r.AccessPoint,
+			OtaInProgress: r.OtaInProgress,
+		}
+
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		r := t.GetRtsStatusResponse3()
+		ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+		sr = StatusResponse{
+			WifiSSID:      string(ssid),
+			Version:       r.Version,
+			WifiState:     int(r.WifiState),
+			AccessPoint:   r.AccessPoint,
+			OtaInProgress: r.OtaInProgress,
+		}
+
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		r := t.GetRtsStatusResponse4()
+		ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+		sr = StatusResponse{
+			WifiSSID:      string(ssid),
+			Version:       r.Version,
+			WifiState:     int(r.WifiState),
+			AccessPoint:   r.AccessPoint,
+			OtaInProgress: r.OtaInProgress,
+		}
+
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		r := t.GetRtsStatusResponse5()
+		ssid, _ := hex.DecodeString(r.WifiSsidHex)
+
+		sr = StatusResponse{
+			WifiSSID:      string(ssid),
+			Version:       r.Version,
+			WifiState:     int(r.WifiState),
+			AccessPoint:   r.AccessPoint,
+			OtaInProgress: r.OtaInProgress,
+			HasOwner:      r.HasOwner,
+			CloudAuthed:   r.IsCloudAuthed,
+		}
+
+	default:
+		return handlerUnsupportedVersionError()
+
 	}
 
 	b, err := sr.Marshal()
 	return b, false, err
-}
 
-func handleRST3StatusResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	r := msg.GetRtsStatusResponse3()
-
-	ssid, _ := hex.DecodeString(r.WifiSsidHex)
-
-	sr := StatusResponse{
-		WifiSSID:      string(ssid),
-		Version:       r.Version,
-		WifiState:     int(r.WifiState),
-		AccessPoint:   r.AccessPoint,
-		OtaInProgress: r.OtaInProgress,
-	}
-
-	b, err := sr.Marshal()
-	return b, false, err
-}
-
-func handleRST4StatusResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	r := msg.GetRtsStatusResponse4()
-
-	ssid, _ := hex.DecodeString(r.WifiSsidHex)
-
-	sr := StatusResponse{
-		WifiSSID:      string(ssid),
-		Version:       r.Version,
-		WifiState:     int(r.WifiState),
-		AccessPoint:   r.AccessPoint,
-		OtaInProgress: r.OtaInProgress,
-	}
-
-	b, err := sr.Marshal()
-	return b, false, err
-}
-
-func handleRST5StatusResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	r := msg.GetRtsStatusResponse5()
-
-	ssid, _ := hex.DecodeString(r.WifiSsidHex)
-
-	sr := StatusResponse{
-		WifiSSID:      string(ssid),
-		Version:       r.Version,
-		ESN:           r.Esn,
-		WifiState:     int(r.WifiState),
-		AccessPoint:   r.AccessPoint,
-		OtaInProgress: r.OtaInProgress,
-		HasOwner:      r.HasOwner,
-		CloudAuthed:   r.IsCloudAuthed,
-	}
-
-	b, err := sr.Marshal()
-	return b, false, err
 }

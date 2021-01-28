@@ -33,8 +33,7 @@ type state struct {
 }
 
 const (
-	errNotAuthorized  = "your vector does not have an authorized bluetooth connection"
-	errInvalidVersion = "invalid rts version"
+	errNotAuthorized = "your vector does not have an authorized bluetooth connection"
 )
 
 // New returns a new Vector

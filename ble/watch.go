@@ -32,12 +32,12 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				return nil, errors.New("empty rts connection")
 			}
 
+			fmt.Println("incoming tag: ", m.Tag())
+
 			switch m.Tag() {
 
-			case rts.RtsConnectionTag_Error:
-
 			case rts.RtsConnectionTag_RtsConnection2:
-				f, ok := rts2Handlers[m.GetRtsConnection2().Tag()]
+				f, ok := rtsHandlers[m.GetRtsConnection2().Tag().String()]
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection2().Tag())
@@ -46,7 +46,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				resp, cont, err = f(v, m.GetRtsConnection2())
 
 			case rts.RtsConnectionTag_RtsConnection3:
-				f, ok := rts3Handlers[m.GetRtsConnection3().Tag()]
+				f, ok := rtsHandlers[m.GetRtsConnection3().Tag().String()]
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection3().Tag())
@@ -55,7 +55,7 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				resp, cont, err = f(v, m.GetRtsConnection3())
 
 			case rts.RtsConnectionTag_RtsConnection4:
-				f, ok := rts4Handlers[m.GetRtsConnection4().Tag()]
+				f, ok := rtsHandlers[m.GetRtsConnection4().Tag().String()]
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection4().Tag())
@@ -64,7 +64,8 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				resp, cont, err = f(v, m.GetRtsConnection4())
 
 			case rts.RtsConnectionTag_RtsConnection5:
-				f, ok := rts5Handlers[m.GetRtsConnection5().Tag()]
+				fmt.Println(m.GetRtsConnection5().Tag().String())
+				f, ok := rtsHandlers[m.GetRtsConnection5().Tag().String()]
 				if !ok {
 					cont = false
 					err = fmt.Errorf("unsupported message: %v", m.GetRtsConnection5().Tag())
@@ -73,6 +74,10 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				resp, cont, err = f(v, m.GetRtsConnection5())
 
 			case rts.RtsConnectionTag_INVALID:
+				cont = false
+				err = errors.New("invalid message")
+
+			case rts.RtsConnectionTag_Error:
 				cont = false
 				err = errors.New("invalid message")
 

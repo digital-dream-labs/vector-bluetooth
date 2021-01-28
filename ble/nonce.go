@@ -1,64 +1,50 @@
 package ble
 
 import (
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
-func handleRTS2NonceRequest(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	if err := v.ble.SetNonces(msg.GetRtsNonceMessage()); err != nil {
+func handleRTSNonceRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+
+	var nr *rts.RtsNonceMessage
+
+	switch v.ble.Version() {
+
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		nr = t.GetRtsNonceMessage()
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		nr = t.GetRtsNonceMessage()
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		nr = t.GetRtsNonceMessage()
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		nr = t.GetRtsNonceMessage()
+
+	default:
+		return handlerUnsupportedVersionError()
+
+	}
+
+	if err := v.ble.SetNonces(nr); err != nil {
 		return nil, false, err
 	}
 
-	b, err := rts2.BuildNonceResponse()
-	if err != nil {
-		return nil, false, err
-	}
-
-	v.state.nonceResponse = b
-
-	return nil, false, nil
-}
-
-func handleRTS3NonceRequest(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	if err := v.ble.SetNonces(msg.GetRtsNonceMessage()); err != nil {
-		return nil, false, err
-	}
-
-	b, err := rts3.BuildNonceResponse()
-	if err != nil {
-		return nil, false, err
-	}
-
-	v.state.nonceResponse = b
-
-	return nil, false, nil
-}
-
-func handleRTS4NonceRequest(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	if err := v.ble.SetNonces(msg.GetRtsNonceMessage()); err != nil {
-		return nil, false, err
-	}
-
-	b, err := rts4.BuildNonceResponse()
-	if err != nil {
-		return nil, false, err
-	}
-
-	v.state.nonceResponse = b
-
-	return nil, false, nil
-}
-
-func handleRTS5NonceRequest(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	if err := v.ble.SetNonces(msg.GetRtsNonceMessage()); err != nil {
-		return nil, false, err
-	}
-
-	b, err := rts5.BuildNonceResponse()
+	b, err := rts.BuildNonceResponse(v.ble.Version())
 	if err != nil {
 		return nil, false, err
 	}

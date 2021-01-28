@@ -37,9 +37,9 @@ func BLEShell() {
 			strings.ReplaceAll(text, "\n", ""),
 		)
 
-                if len(args) == 0 {
-                    continue
-                }
+		if len(args) == 0 {
+			continue
+		}
 
 		switch args[0] {
 		case "scan":
@@ -58,6 +58,9 @@ func BLEShell() {
 			c.wifiConnect(args)
 		case "ota-start":
 			c.startOTA(args)
+		case "ota-cancel":
+			c.cancelOTA()
+
 		default:
 			help()
 		}

@@ -4,10 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts2"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts3"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts4"
-	"github.com/digital-dream-labs/vector-bluetooth/ble/rts5"
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
@@ -32,22 +28,9 @@ func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	var (
-		msg []byte
-		err error
-	)
-
-	switch v.ble.Version() {
-	case rtsV2:
-		msg, err = rts2.BuildOTAStartMessage(url)
-	case rtsV3:
-		msg, err = rts3.BuildOTAStartMessage(url)
-	case rtsV4:
-		msg, err = rts4.BuildOTAStartMessage(url)
-	case rtsV5:
-		msg, err = rts5.BuildWifiScanMessage()
-	default:
-		return nil, errors.New(errInvalidVersion)
+	msg, err := rts.BuildOTAStartMessage(v.ble.Version(), url)
+	if err != nil {
+		return nil, err
 	}
 	if err != nil {
 		return nil, err
@@ -67,41 +50,42 @@ func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
 	return &resp, err
 }
 
-func handleRST2OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_2) ([]byte, bool, error) {
-	m := msg.GetRtsOtaUpdateResponse()
+func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+	var m *rts.RtsOtaUpdateResponse
+	switch v.ble.Version() {
 
-	resp := OTAStartResponse{
-		Status: int(m.Status),
+	case rtsV2:
+		t, ok := msg.(*rts.RtsConnection_2)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsOtaUpdateResponse()
+
+	case rtsV3:
+		t, ok := msg.(*rts.RtsConnection_3)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsOtaUpdateResponse()
+
+	case rtsV4:
+		t, ok := msg.(*rts.RtsConnection_4)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsOtaUpdateResponse()
+
+	case rtsV5:
+		t, ok := msg.(*rts.RtsConnection_5)
+		if !ok {
+			return handlerUnsupportedTypeError()
+		}
+		m = t.GetRtsOtaUpdateResponse()
+
+	default:
+		return handlerUnsupportedVersionError()
+
 	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST3OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	m := msg.GetRtsOtaUpdateResponse()
-
-	resp := OTAStartResponse{
-		Status: int(m.Status),
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST4OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	m := msg.GetRtsOtaUpdateResponse()
-
-	resp := OTAStartResponse{
-		Status: int(m.Status),
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST5OtaUpdateResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	m := msg.GetRtsOtaUpdateResponse()
 
 	resp := OTAStartResponse{
 		Status: int(m.Status),
