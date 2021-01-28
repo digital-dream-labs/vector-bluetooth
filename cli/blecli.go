@@ -32,9 +32,14 @@ func BLEShell() {
 	for {
 		fmt.Print("-> ")
 		text, _ := reader.ReadString('\n')
+
 		args := strings.Fields(
 			strings.ReplaceAll(text, "\n", ""),
 		)
+
+                if len(args) == 0 {
+                    continue
+                }
 
 		switch args[0] {
 		case "scan":
