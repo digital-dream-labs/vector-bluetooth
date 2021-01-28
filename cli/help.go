@@ -14,6 +14,8 @@ func help() {
 	get-status             displays the status of your vector
 	wifi-scan              scan for a list of available wifi networks
 	wifi-connect           connect to a wifi network
+	wifi-ip                display IP information from the robot
+	wifi-forget            tell vector to forget a wifi network
 	ota-start              perform an OTA code download
 	ota-cancel             stops an in-progress OTA download`)
 }

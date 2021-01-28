@@ -26,7 +26,6 @@ func (c *conf) wifiScan() {
 	}
 
 	fmt.Println(string(data))
-
 }
 
 func (c *conf) wifiConnect(args []string) {
@@ -48,6 +47,54 @@ func (c *conf) wifiConnect(args []string) {
 	}
 
 	resp, err := c.v.WifiConnect(args[1], args[2], 10, t)
+	if err != nil {
+		log.Println("unable to get status: ", err)
+		return
+	}
+	data, err := json.MarshalIndent(resp, "", "  ")
+	if err != nil {
+		log.Println("unable to get status: ", err)
+		return
+	}
+
+	fmt.Println(string(data))
+
+}
+
+func (c *conf) wifiIP() {
+	if !c.v.Connected() {
+		fmt.Println("bluetooth connectivity must be established to use this command")
+		return
+	}
+
+	resp, err := c.v.WifiIP()
+	if err != nil {
+		log.Println("unable to get status: ", err)
+		return
+	}
+
+	data, err := json.MarshalIndent(resp, "", "  ")
+	if err != nil {
+		log.Println("unable to get status: ", err)
+		return
+	}
+
+	fmt.Println(string(data))
+}
+
+func (c *conf) wifiForget(args []string) {
+	if !c.v.Connected() {
+		fmt.Println("bluetooth connectivity must be established to use this command")
+		return
+	}
+
+	//nolint
+	if len(args) != 2 {
+		fmt.Println("invalid argument.  Usage is \n wifi-connect SSID PASSWORD NETWORKTYPE")
+		return
+	}
+
+	resp, err := c.v.WifiForget(args[1])
 	if err != nil {
 		log.Println("unable to get status: ", err)
 		return

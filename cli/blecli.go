@@ -56,6 +56,10 @@ func BLEShell() {
 			c.wifiScan()
 		case "wifi-connect":
 			c.wifiConnect(args)
+		case "wifi-ip":
+			c.wifiIP()
+		case "wifi-forget":
+			c.wifiForget(args)
 		case "ota-start":
 			c.startOTA(args)
 		case "ota-cancel":

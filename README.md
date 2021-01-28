@@ -40,7 +40,10 @@ There are more features in the library than are currently available in the CLI, 
 |  get-status | displays the status of your vector  |
 |  wifi-scan | scan for a list of available wifi networks  |
 |  wifi-connect | connect to a wifi network  |
+|  wifi-forget | tell vector to forget a wifi network |
+|  wifi-ip | display IP information of  the robot |
 |  ota-start | perform an OTA code download  |
+|  ota-cancel | stops an in-progress OTA download |
 
 ### Project status
 
