@@ -45,7 +45,7 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV2:
 		msg, err = rts2.BuildStatusMessage()
 	case rtsV3:
@@ -54,6 +54,8 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 		msg, err = rts4.BuildStatusMessage()
 	case rtsV5:
 		msg, err = rts5.BuildStatusMessage()
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err

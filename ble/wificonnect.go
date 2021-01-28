@@ -40,7 +40,7 @@ func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, autht
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV2:
 		msg, err = rts2.BuildWifiConnectMessage(ssid, password, timeout, authtype)
 	case rtsV3:
@@ -49,6 +49,8 @@ func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, autht
 		msg, err = rts4.BuildWifiConnectMessage(ssid, password, timeout, authtype)
 	case rtsV5:
 		msg, err = rts5.BuildWifiConnectMessage(ssid, password, timeout, authtype)
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err

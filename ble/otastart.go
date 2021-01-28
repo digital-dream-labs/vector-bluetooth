@@ -37,7 +37,7 @@ func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV2:
 		msg, err = rts2.BuildOTAStartMessage(url)
 	case rtsV3:
@@ -46,6 +46,8 @@ func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
 		msg, err = rts4.BuildOTAStartMessage(url)
 	case rtsV5:
 		msg, err = rts5.BuildWifiScanMessage()
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err

@@ -69,7 +69,7 @@ func (v *VectorBLE) ConfigureSettings(settings *VectorSettings) error {
 		return errors.New(errNotAuthorized)
 	}
 
-	if v.ble.Version != rtsV5 {
+	if v.ble.Version() != rtsV5 {
 		return errors.New("unsupported version")
 	}
 

@@ -20,7 +20,7 @@ func (v *VectorBLE) OTACancel() ([]byte, error) {
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV2:
 		msg, err = rts2.BuildOTACancelMessage()
 	case rtsV3:
@@ -29,6 +29,8 @@ func (v *VectorBLE) OTACancel() ([]byte, error) {
 		msg, err = rts4.BuildOTACancelMessage()
 	case rtsV5:
 		msg, err = rts5.BuildOTACancelMessage()
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err

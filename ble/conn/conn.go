@@ -17,8 +17,8 @@ type Connection struct {
 	profile     *ble.Profile
 	incoming    chan []byte
 	out         chan []byte
-	Crypto      *blecrypto.BLECrypto
-	Version     int
+	crypto      *blecrypto.BLECrypto
+	version     int
 	established bool
 	connected   bool
 	encrypted   bool
@@ -35,7 +35,7 @@ func New(output chan []byte) (*Connection, error) {
 		scanresults: make(map[int]scanresult),
 		incoming:    make(chan []byte),
 		out:         output,
-		Crypto:      blecrypto.New(),
+		crypto:      blecrypto.New(),
 	}
 
 	d, err := dev.NewDevice("default")

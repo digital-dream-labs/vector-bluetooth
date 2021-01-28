@@ -46,7 +46,7 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV2:
 		msg, err = rts2.BuildWifiScanMessage()
 	case rtsV3:
@@ -55,6 +55,8 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 		msg, err = rts4.BuildWifiScanMessage()
 	case rtsV5:
 		msg, err = rts5.BuildWifiScanMessage()
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err

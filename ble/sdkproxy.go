@@ -38,7 +38,7 @@ func (v *VectorBLE) SDKProxy(settings *SDKProxyRequest) (*SDKProxyResponse, erro
 		return nil, errors.New(errNotAuthorized)
 	}
 
-	if v.ble.Version != rtsV5 {
+	if v.ble.Version() != rtsV5 {
 		return nil, errors.New("unsupported version")
 	}
 

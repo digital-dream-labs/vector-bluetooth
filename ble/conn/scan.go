@@ -61,14 +61,6 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 
 }
 
-/*
-func (c *Connection) advHandler(a ble.Advertisement) {
-	if a.Connectable() {
-		c.scanresults[a.LocalName()] = a.Addr()
-	}
-}
-*/
-
 type advhandler struct {
 	count int
 	conn  *Connection

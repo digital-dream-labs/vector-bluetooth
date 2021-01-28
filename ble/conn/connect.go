@@ -124,24 +124,22 @@ func (c *Connection) subscribe(errChan chan error) {
 func (c *Connection) handleIncoming() {
 	blebuf := bleBuffer{}
 	for {
-		select {
-		case incoming := <-c.incoming:
-			b := blebuf.receiveRawBuffer(incoming)
-			if b == nil {
-				continue
-			}
-			switch {
-			case !c.connected:
-				c.handleConnectionRequest(incoming)
-			case !c.encrypted && c.connected:
-				c.out <- b
-			case c.encrypted && c.connected:
-				buf, _ := c.Crypto.DecryptMessage(b)
-				// IDEA:  should this reset everything?
-				c.out <- buf
-			default:
-				// IDEA:  mark as not connected, encrypted, or something.
-			}
+		incoming := <-c.incoming
+		b := blebuf.receiveRawBuffer(incoming)
+		if b == nil {
+			continue
+		}
+		switch {
+		case !c.connected:
+			c.handleConnectionRequest(incoming)
+		case !c.encrypted && c.connected:
+			c.out <- b
+		case c.encrypted && c.connected:
+			buf, _ := c.crypto.DecryptMessage(b)
+			// IDEA:  should this reset everything?
+			c.out <- buf
+		default:
+			// IDEA:  mark as not connected, encrypted, or something.
 		}
 	}
 
@@ -161,5 +159,5 @@ func (c *Connection) handleConnectionRequest(buffer []byte) {
 	}
 
 	c.connected = true
-	c.Version = int(buffer[2])
+	c.version = int(buffer[2])
 }

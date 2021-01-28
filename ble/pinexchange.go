@@ -2,7 +2,7 @@ package ble
 
 // SendPin sends the pin and finishes the key exchange
 func (v *VectorBLE) SendPin(pin string) error {
-	if err := v.ble.Crypto.SetPin(pin); err != nil {
+	if err := v.ble.SetPin(pin); err != nil {
 		return err
 	}
 

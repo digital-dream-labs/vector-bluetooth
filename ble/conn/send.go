@@ -8,7 +8,7 @@ const (
 func (c *Connection) Send(buf []byte) error {
 	if c.encrypted {
 		var err error
-		buf, err = c.Crypto.Encrypt(buf)
+		buf, err = c.crypto.Encrypt(buf)
 		if err != nil {
 			return err
 		}

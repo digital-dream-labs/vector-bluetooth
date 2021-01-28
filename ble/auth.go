@@ -47,13 +47,15 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 		err error
 	)
 
-	switch v.ble.Version {
+	switch v.ble.Version() {
 	case rtsV3:
 		msg, err = rts3.BuildAuthMessage(key)
 	case rtsV4:
 		msg, err = rts4.BuildAuthMessage(key)
 	case rtsV5:
 		msg, err = rts5.BuildAuthMessage(key)
+	default:
+		return nil, errors.New(errInvalidVersion)
 	}
 	if err != nil {
 		return nil, err
