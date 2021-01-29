@@ -107,7 +107,6 @@ func (v *VectorBLE) updateAccountSettings(s *VectorSettings) error {
 	}
 
 	if r.StatusCode != http.StatusOK {
-		fmt.Println(r)
 		return fmt.Errorf("update account settings failure: %s", r.ResponseBody)
 	}
 	return nil

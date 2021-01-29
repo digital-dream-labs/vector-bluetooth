@@ -26,4 +26,6 @@ var rtsHandlers = map[string]func(v *VectorBLE, msg interface{}) ([]byte, bool, 
 	"RtsWifiIpResponse":          handleRSTWifiIPResponse,
 	"RtsWifiAccessPointResponse": handleRSTWifiAccessPointResponse,
 	"RtsWifiForgetResponse":      handleRSTWifiForgetResponse,
+	"RtsLogResponse":             handleRtsLogResponse,
+	"RtsFileDownload":            handleRtsFileDownload,
 }

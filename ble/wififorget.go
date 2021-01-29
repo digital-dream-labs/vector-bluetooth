@@ -22,7 +22,7 @@ func (sr *WifiForgetResponse) Unmarshal(b []byte) error {
 	return json.Unmarshal(b, sr)
 }
 
-// WifiIP sends a WifiIP message to the vector robot
+// WifiForget sends a WifiForget message to the vector robot
 func (v *VectorBLE) WifiForget(ssid string) (*WifiIPResponse, error) {
 	if !v.state.authorized {
 		return nil, errors.New(errNotAuthorized)

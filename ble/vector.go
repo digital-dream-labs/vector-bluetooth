@@ -5,6 +5,10 @@ import (
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
+const (
+	bleBuffer = 5
+)
+
 // VectorBLE contains the information required to connect, etc
 type VectorBLE struct {
 	bleReader chan []byte
@@ -30,6 +34,15 @@ type state struct {
 	nonceResponse []byte
 	authorized    bool
 	clientGUID    string
+	filedownload  filedownload
+}
+
+type filedownload struct {
+	FileID      uint32
+	PacketTotal uint32
+	// If the logs ever get bigger than a few k, this will
+	// definitely have to be rewritten to use a tempfile or something
+	Buffer []uint8
 }
 
 const (
@@ -38,12 +51,13 @@ const (
 
 // New returns a new Vector
 func New() (*VectorBLE, error) {
-	bleReader := make(chan []byte)
+	bleReader := make(chan []byte, bleBuffer)
 
 	b, err := conn.New(bleReader)
 	if err != nil {
 		return nil, err
 	}
+
 	v := VectorBLE{
 		bleReader: bleReader,
 		ble:       b,

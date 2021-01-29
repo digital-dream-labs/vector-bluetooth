@@ -64,7 +64,8 @@ func BLEShell() {
 			c.startOTA(args)
 		case "ota-cancel":
 			c.cancelOTA()
-
+		case "logs":
+			c.logs()
 		default:
 			help()
 		}

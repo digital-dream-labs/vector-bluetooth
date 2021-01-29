@@ -1,8 +1,6 @@
 package ble
 
 import (
-	"fmt"
-
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
@@ -49,7 +47,6 @@ func handleRtsConnRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 	}
 
 	if err := v.ble.SetRemotePublicKey(cr); err != nil {
-		fmt.Println(err)
 		return nil, false, err
 	}
 

@@ -32,8 +32,6 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				return nil, errors.New("empty rts connection")
 			}
 
-			fmt.Println("incoming tag: ", m.Tag())
-
 			switch m.Tag() {
 
 			case rts.RtsConnectionTag_RtsConnection2:
@@ -64,7 +62,6 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				resp, cont, err = f(v, m.GetRtsConnection4())
 
 			case rts.RtsConnectionTag_RtsConnection5:
-				fmt.Println(m.GetRtsConnection5().Tag().String())
 				f, ok := rtsHandlers[m.GetRtsConnection5().Tag().String()]
 				if !ok {
 					cont = false

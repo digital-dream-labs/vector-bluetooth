@@ -50,8 +50,5 @@ There are more features in the library than are currently available in the CLI, 
 This is an early release, and not all features are implemented in either the CLI or in the library itself.
 
 #### TODO:
-1.  wifi-ip (get vectors IP) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/1)
-2.  wifi-ap (set up vector in AP mode) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/2)
-3.  wifi-forget (forget one or all wifi networks) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/3)
-4.  logs (download lotgs from vector) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/4)
+1.  logs (download lotgs from vector) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/4)
 
