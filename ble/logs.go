@@ -103,9 +103,6 @@ func handleRtsLogResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 }
 
 func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
-	fmt.Print(".")
-
 	var sr *rts.RtsFileDownload
 
 	switch v.ble.Version() {
@@ -185,7 +182,7 @@ func (v *VectorBLE) unBzip() (string, error) {
 	t := time.Now()
 	fn := t.Format(time.RFC3339)
 	output, err := os.OpenFile(
-		fmt.Sprintf("%s.tar.gz", fn),
+		fmt.Sprintf("%s/%s.tar.gz", v.logdir, fn),
 		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0600,
 	)
@@ -201,8 +198,6 @@ func (v *VectorBLE) unBzip() (string, error) {
 
 	_, err = r.Read(buf)
 	if err != nil && err != io.EOF {
-		fmt.Println(err)
-		fmt.Println("NO")
 		return "", err
 	}
 

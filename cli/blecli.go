@@ -18,7 +18,9 @@ type conf struct {
 func BLEShell() {
 	// bkrt := "Vector G4T1"
 
-	v, err := ble.New()
+	v, err := ble.New(
+		ble.WithLogDirectory("."),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}

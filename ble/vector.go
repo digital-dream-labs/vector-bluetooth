@@ -14,6 +14,7 @@ type VectorBLE struct {
 	bleReader chan []byte
 	ble       bleconn
 	state     state
+	logdir    string
 }
 
 type bleconn interface {
@@ -51,7 +52,14 @@ const (
 )
 
 // New returns a new Vector
-func New() (*VectorBLE, error) {
+func New(opts ...Option) (*VectorBLE, error) {
+
+	cfg := options{}
+
+	for _, opt := range opts {
+		opt(&cfg)
+	}
+
 	bleReader := make(chan []byte, bleBuffer)
 
 	b, err := conn.New(bleReader)
@@ -62,6 +70,7 @@ func New() (*VectorBLE, error) {
 	v := VectorBLE{
 		bleReader: bleReader,
 		ble:       b,
+		logdir:    cfg.outputDir,
 	}
 
 	return &v, nil

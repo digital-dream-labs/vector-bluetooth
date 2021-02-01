@@ -3,13 +3,9 @@ module github.com/digital-dream-labs/vector-bluetooth
 go 1.15
 
 require (
-	github.com/codeclysm/extract v2.2.0+incompatible
 	github.com/currantlabs/ble v0.0.0-20171229162446-c1d21c164cf8
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dsnet/compress v0.0.1
-	github.com/h2non/filetype v1.1.1 // indirect
 	github.com/jamesruan/sodium v0.0.0-20181216154042-9620b83ffeae
-	github.com/juju/errors v0.0.0-20200330140219-3fe23663418f // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/mgutz/logxi v0.0.0-20161027140823-aebf8a7d67ab // indirect
