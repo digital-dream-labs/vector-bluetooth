@@ -10,9 +10,11 @@ import (
 )
 
 const (
-	duration  = 2
-	readUUID  = "7d2a4bda-d29b-4152-b725-2491478c5cd7"
-	writeUUID = "30619f2d-0f54-41bd-a65a-7588d8c85b45"
+	duration   = 2
+	readUUID   = "7d2a4bda-d29b-4152-b725-2491478c5cd7"
+	writeUUID  = "30619f2d-0f54-41bd-a65a-7588d8c85b45"
+	retryCount = 3
+	offset     = 1
 )
 
 // Connect connects to a specific device
@@ -21,15 +23,15 @@ func (c *Connection) Connect(id int) error {
 		return err
 	}
 
-	if err := retry(3, time.Second, c.discoverProfile); err != nil {
+	if err := retry(retryCount, time.Second, c.discoverProfile); err != nil {
 		return err
 	}
 
-	if err := retry(3, time.Second, c.findReader); err != nil {
+	if err := retry(retryCount, time.Second, c.findReader); err != nil {
 		return err
 	}
 
-	if err := retry(3, time.Second, c.findWriter); err != nil {
+	if err := retry(retryCount, time.Second, c.findWriter); err != nil {
 		return err
 	}
 
@@ -165,27 +167,17 @@ func (c *Connection) handleConnectionRequest(buffer []byte) {
 	c.version = int(buffer[2])
 }
 
-type stop struct {
-	error
-}
-
 func retry(attempts int, sleep time.Duration, f func() error) error {
 	if err := f(); err != nil {
-		if s, ok := err.(stop); ok {
-			// Return the original error for later checking
-			return s.error
-		}
-
 		if attempts--; attempts > 0 {
-			// Add some randomness to prevent creating a Thundering Herd
+			//nolint -- we definitely don't need cryptographically secure numbers for jitter
 			jitter := time.Duration(rand.Int63n(int64(sleep)))
-			sleep += jitter / 2
+			sleep += jitter / offset
 
 			time.Sleep(sleep)
-			return retry(attempts, 2*sleep, f)
+			return retry(attempts, offset*sleep, f)
 		}
 		return err
 	}
-
 	return nil
 }
