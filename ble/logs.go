@@ -150,7 +150,6 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) 
 		return nil, true, nil
 
 	case sr.PacketNumber == sr.PacketTotal:
-		fmt.Println("about to uncompress")
 		v.state.filedownload.Buffer = append(v.state.filedownload.Buffer, sr.FileChunk...)
 
 		fn, err := v.unBzip()
@@ -207,6 +206,6 @@ func (v *VectorBLE) unBzip() (string, error) {
 
 	_ = output.Close()
 
-	return fn, nil
+	return fn + ".tar.gz", nil
 
 }
