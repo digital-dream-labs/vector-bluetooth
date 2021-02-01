@@ -1,6 +1,9 @@
 package conn
 
 import (
+	"math/rand"
+	"time"
+
 	"github.com/currantlabs/ble"
 	"github.com/currantlabs/ble/examples/lib/dev"
 	"github.com/digital-dream-labs/vector-bluetooth/ble/blecrypto"
@@ -31,6 +34,9 @@ type scanresult struct {
 
 // New returns a connection, or an error on failure
 func New(output chan []byte) (*Connection, error) {
+
+	rand.Seed(time.Now().UnixNano())
+
 	c := Connection{
 		scanresults: make(map[int]scanresult),
 		incoming:    make(chan []byte),

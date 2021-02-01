@@ -44,6 +44,8 @@ There are more features in the library than are currently available in the CLI, 
 |  wifi-ip | display IP information of  the robot |
 |  ota-start | perform an OTA code download  |
 |  ota-cancel | stops an in-progress OTA download |
+|  logs  | download logs from your robot  |
+
 
 ### Project status
 

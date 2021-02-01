@@ -2,6 +2,8 @@ package conn
 
 import (
 	"context"
+	"math/rand"
+	"time"
 
 	"github.com/currantlabs/ble"
 	"github.com/pkg/errors"
@@ -19,15 +21,15 @@ func (c *Connection) Connect(id int) error {
 		return err
 	}
 
-	if err := c.discoverProfile(); err != nil {
+	if err := retry(3, time.Second, c.discoverProfile); err != nil {
 		return err
 	}
 
-	if err := c.findReader(); err != nil {
+	if err := retry(3, time.Second, c.findReader); err != nil {
 		return err
 	}
 
-	if err := c.findWriter(); err != nil {
+	if err := retry(3, time.Second, c.findWriter); err != nil {
 		return err
 	}
 
@@ -139,7 +141,8 @@ func (c *Connection) handleIncoming() {
 			// IDEA:  should this reset everything?
 			c.out <- buf
 		default:
-			// IDEA:  mark as not connected, encrypted, or something.
+			c.established = false
+			c.encrypted = false
 		}
 	}
 
@@ -160,4 +163,29 @@ func (c *Connection) handleConnectionRequest(buffer []byte) {
 
 	c.connected = true
 	c.version = int(buffer[2])
+}
+
+type stop struct {
+	error
+}
+
+func retry(attempts int, sleep time.Duration, f func() error) error {
+	if err := f(); err != nil {
+		if s, ok := err.(stop); ok {
+			// Return the original error for later checking
+			return s.error
+		}
+
+		if attempts--; attempts > 0 {
+			// Add some randomness to prevent creating a Thundering Herd
+			jitter := time.Duration(rand.Int63n(int64(sleep)))
+			sleep += jitter / 2
+
+			time.Sleep(sleep)
+			return retry(attempts, 2*sleep, f)
+		}
+		return err
+	}
+
+	return nil
 }

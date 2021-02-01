@@ -28,6 +28,7 @@ type bleconn interface {
 	Send(buf []byte) error
 	SetPin(string) error
 	Version() int
+	Reset()
 }
 
 type state struct {

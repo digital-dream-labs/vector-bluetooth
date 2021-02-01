@@ -17,5 +17,6 @@ func help() {
 	wifi-ip                display IP information from the robot
 	wifi-forget            tell vector to forget a wifi network
 	ota-start              perform an OTA code download
-	ota-cancel             stops an in-progress OTA download`)
+	ota-cancel             stops an in-progress OTA download
+	logs                   download logs from your robot`)
 }

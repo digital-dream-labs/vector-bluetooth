@@ -119,7 +119,7 @@ func (v *VectorBLE) updateSettings(s *VectorSettings) error {
 			TimeZone:         s.Timezone,
 			Locale:           s.Locale,
 			DistIsMetric:     s.MetricDistance,
-			TempIsFahrenheit: s.MetricTemperature,
+			TempIsFahrenheit: (!s.MetricTemperature),
 		},
 	}
 

@@ -183,8 +183,9 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) 
 func (v *VectorBLE) unBzip() (string, error) {
 
 	t := time.Now()
+	fn := t.Format(time.RFC3339)
 	output, err := os.OpenFile(
-		fmt.Sprintf("%s.tar.gz", t.Format(time.RFC3339)),
+		fmt.Sprintf("%s.tar.gz", fn),
 		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0600,
 	)
@@ -193,8 +194,6 @@ func (v *VectorBLE) unBzip() (string, error) {
 	}
 
 	buf := make([]byte, len(v.state.filedownload.Buffer))
-
-	// fmt.Println("size: ", fileinfo.Size())
 
 	r := bzip2.NewReader(
 		bytes.NewReader(v.state.filedownload.Buffer),
@@ -213,6 +212,6 @@ func (v *VectorBLE) unBzip() (string, error) {
 
 	_ = output.Close()
 
-	return "", nil
+	return fn, nil
 
 }
