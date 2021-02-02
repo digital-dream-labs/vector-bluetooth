@@ -33,7 +33,6 @@ func (v *VectorBLE) watch() ([]byte, error) {
 			}
 
 			switch m.Tag() {
-
 			case rts.RtsConnectionTag_RtsConnection2:
 				f, ok := rtsHandlers[m.GetRtsConnection2().Tag().String()]
 				if !ok {
@@ -82,7 +81,6 @@ func (v *VectorBLE) watch() ([]byte, error) {
 				cont = false
 				err = errors.New("unsupported message version")
 			}
-
 		} else {
 			return resp, err
 		}

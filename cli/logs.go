@@ -23,5 +23,4 @@ func (c *conf) logs() {
 	}
 
 	fmt.Println(string(data))
-
 }

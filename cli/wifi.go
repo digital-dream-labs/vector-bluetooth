@@ -58,7 +58,6 @@ func (c *conf) wifiConnect(args []string) {
 	}
 
 	fmt.Println(string(data))
-
 }
 
 func (c *conf) wifiIP() {
@@ -106,5 +105,4 @@ func (c *conf) wifiForget(args []string) {
 	}
 
 	fmt.Println(string(data))
-
 }

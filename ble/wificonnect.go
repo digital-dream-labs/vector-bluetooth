@@ -26,7 +26,7 @@ func (sr *WifiConnectResponse) Unmarshal(b []byte) error {
 }
 
 // WifiConnect sends a wifi connect message to the robot
-func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, authtype int) (*WifiConnectResponse, error) {
+func (v *VectorBLE) WifiConnect(ssid, password string, timeout, authtype int) (*WifiConnectResponse, error) {
 	if !v.state.authorized {
 		return nil, errors.New(errNotAuthorized)
 	}
@@ -48,13 +48,11 @@ func (v *VectorBLE) WifiConnect(ssid string, password string, timeout int, autht
 	}
 
 	return &resp, err
-
 }
 
-func handleRSTWifiConnectionResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRSTWifiConnectionResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var resp WifiConnectResponse
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -120,7 +118,6 @@ func handleRSTWifiConnectionResponse(v *VectorBLE, msg interface{}) ([]byte, boo
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	b, err := resp.Marshal()

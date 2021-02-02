@@ -16,7 +16,6 @@ type bleBuffer struct {
 }
 
 func (b *bleBuffer) receiveRawBuffer(buf []byte) []byte {
-
 	headerByte := buf[0]
 	sizeByte := getSize(headerByte)
 	multipartState := getMultipartBits(headerByte)
@@ -26,7 +25,6 @@ func (b *bleBuffer) receiveRawBuffer(buf []byte) []byte {
 	}
 
 	switch multipartState {
-
 	case msgStart:
 		b.Buf = []byte{}
 		b.append(buf, int(sizeByte))

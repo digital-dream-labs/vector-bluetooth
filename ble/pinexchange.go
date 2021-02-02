@@ -12,5 +12,4 @@ func (v *VectorBLE) SendPin(pin string) error {
 	v.ble.EnableEncryption()
 	_, err := v.watch()
 	return err
-
 }

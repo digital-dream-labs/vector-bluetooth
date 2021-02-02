@@ -34,7 +34,6 @@ type scanresult struct {
 
 // New returns a connection, or an error on failure
 func New(output chan []byte) (*Connection, error) {
-
 	rand.Seed(time.Now().UnixNano())
 
 	c := Connection{

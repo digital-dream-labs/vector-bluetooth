@@ -52,7 +52,6 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 			Address: v.addr.String(),
 		}
 		d = append(d, &td)
-
 	}
 
 	resp := ScanResponse{
@@ -60,7 +59,6 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 	}
 
 	return &resp, nil
-
 }
 
 type advhandler struct {
@@ -77,7 +75,6 @@ func newADVHandler(conn *Connection) *advhandler {
 
 func (a *advhandler) scan(d ble.Advertisement) {
 	if d.Connectable() {
-
 		if a.conn.scanresults != nil {
 			for _, v := range a.conn.scanresults {
 				if v.name == d.LocalName() {
@@ -92,5 +89,4 @@ func (a *advhandler) scan(d ble.Advertisement) {
 		}
 		a.count++
 	}
-
 }

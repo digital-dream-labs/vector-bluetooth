@@ -50,10 +50,9 @@ func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
 	return &resp, err
 }
 
-func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var m *rts.RtsOtaUpdateResponse
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -84,7 +83,6 @@ func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) ([]byte, bool, er
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	resp := OTAStartResponse{

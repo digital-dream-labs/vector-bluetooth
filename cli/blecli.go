@@ -16,8 +16,6 @@ type conf struct {
 
 // BLEShell starts the bluetooth interactive shell
 func BLEShell() {
-	// bkrt := "Vector G4T1"
-
 	v, err := ble.New(
 		ble.WithLogDirectory("."),
 	)

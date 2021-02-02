@@ -53,7 +53,6 @@ const (
 
 // New returns a new Vector
 func New(opts ...Option) (*VectorBLE, error) {
-
 	cfg := options{}
 
 	for _, opt := range opts {

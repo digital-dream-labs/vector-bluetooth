@@ -29,7 +29,6 @@ func (c *conf) startOTA(args []string) {
 	}
 
 	fmt.Println(string(data))
-
 }
 
 func (c *conf) cancelOTA() {

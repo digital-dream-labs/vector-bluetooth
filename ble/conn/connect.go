@@ -82,7 +82,6 @@ func (c *Connection) discoverProfile() error {
 
 // findWriter configures the writer
 func (c *Connection) findWriter() error {
-
 	wr := c.profile.Find(
 		ble.NewCharacteristic(
 			c.writeUUID(),
@@ -147,7 +146,6 @@ func (c *Connection) handleIncoming() {
 			c.encrypted = false
 		}
 	}
-
 }
 
 func (c *Connection) readUUID() ble.UUID {
@@ -169,7 +167,8 @@ func (c *Connection) handleConnectionRequest(buffer []byte) {
 
 func retry(attempts int, sleep time.Duration, f func() error) error {
 	if err := f(); err != nil {
-		if attempts--; attempts > 0 {
+		attempts--
+		if attempts > 0 {
 			//nolint -- we definitely don't need cryptographically secure numbers for jitter
 			jitter := time.Duration(rand.Int63n(int64(sleep)))
 			sleep += jitter / offset

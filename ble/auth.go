@@ -64,10 +64,9 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 	return &resp, err
 }
 
-func handleRSTCloudSessionResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRSTCloudSessionResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var m *rts.RtsCloudSessionResponse
 	switch v.ble.Version() {
-
 	case rtsV3:
 		t, ok := msg.(*rts.RtsConnection_3)
 		if !ok {
@@ -101,46 +100,4 @@ func handleRSTCloudSessionResponse(v *VectorBLE, msg interface{}) ([]byte, bool,
 
 	b, err := resp.Marshal()
 	return b, false, err
-
 }
-
-/*
-func handleRST3CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_3) ([]byte, bool, error) {
-	m := msg.GetRtsCloudSessionResponse()
-
-	resp := AuthResponse{
-		Status:          AuthStatus(m.StatusCode),
-		ClientTokenGUID: m.ClientTokenGuid,
-		Success:         m.Success,
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST4CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_4) ([]byte, bool, error) {
-	m := msg.GetRtsCloudSessionResponse()
-
-	resp := AuthResponse{
-		Status:          AuthStatus(m.StatusCode),
-		ClientTokenGUID: m.ClientTokenGuid,
-		Success:         m.Success,
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-
-func handleRST5CloudSessionResponse(v *VectorBLE, msg *rts.RtsConnection_5) ([]byte, bool, error) {
-	m := msg.GetRtsCloudSessionResponse()
-
-	resp := AuthResponse{
-		Status:          AuthStatus(m.StatusCode),
-		ClientTokenGUID: m.ClientTokenGuid,
-		Success:         m.Success,
-	}
-
-	b, err := resp.Marshal()
-	return b, false, err
-}
-*/

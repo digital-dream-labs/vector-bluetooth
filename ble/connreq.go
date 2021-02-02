@@ -4,12 +4,10 @@ import (
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
-func handleRtsConnRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRtsConnRequest(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var cr *rts.RtsConnRequest
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -43,7 +41,6 @@ func handleRtsConnRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	if err := v.ble.SetRemotePublicKey(cr); err != nil {

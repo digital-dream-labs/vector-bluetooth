@@ -4,12 +4,10 @@ import (
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
-func handleRTSNonceRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRTSNonceRequest(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var nr *rts.RtsNonceMessage
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -37,7 +35,6 @@ func handleRTSNonceRequest(v *VectorBLE, msg interface{}) ([]byte, bool, error) 
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	if err := v.ble.SetNonces(nr); err != nil {

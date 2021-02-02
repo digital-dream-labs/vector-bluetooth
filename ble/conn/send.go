@@ -25,7 +25,6 @@ func (c *Connection) Send(buf []byte) error {
 		offset := size - remaining
 
 		switch {
-
 		case remaining == size:
 			msgSize := maxSize - 1
 			if err := c.messageWithHeader(msgStart, buf[offset:offset+msgSize], msgSize); err != nil {
@@ -46,7 +45,6 @@ func (c *Connection) Send(buf []byte) error {
 			}
 			remaining -= msgSize
 		}
-
 	}
 	return nil
 }
@@ -59,7 +57,7 @@ func (c *Connection) messageWithHeader(multipart byte, buffer []byte, size int) 
 	return c.rawMessage(msg)
 }
 
-func (c Connection) rawMessage(buffer []byte) error {
+func (c *Connection) rawMessage(buffer []byte) error {
 	return c.connection.WriteCharacteristic(
 		c.reader,
 		buffer,

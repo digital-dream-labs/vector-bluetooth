@@ -21,9 +21,9 @@ func (b *BLECrypto) DecryptMessage(msg []byte) ([]byte, error) {
 		(*C.ulonglong)(nil),
 		(*C.uchar)(nil),
 		(*C.uchar)(&msg[0]),
-		(C.ulonglong)(len(msg)),
+		C.ulonglong(len(msg)),
 		(*C.uchar)(nil),
-		(C.ulonglong)(0),
+		C.ulonglong(0),
 		(*C.uchar)(&b.decryptionNonce[0]),
 		(*C.uchar)(&b.decrypt[0]))
 

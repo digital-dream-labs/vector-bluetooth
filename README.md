@@ -60,7 +60,3 @@ There are more features in the library than are currently available in the CLI, 
 ### Project status
 
 This is an early release, and not all features are implemented in either the CLI or in the library itself.
-
-#### TODO:
-1.  logs (download logs from vector) [issue](https://github.com/digital-dream-labs/vector-bluetooth/issues/4)
-
