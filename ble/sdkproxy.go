@@ -62,11 +62,10 @@ func (v *VectorBLE) SDKProxy(settings *SDKProxyRequest) (*SDKProxyResponse, erro
 	return &resp, err
 }
 
-func handleRSTSDKProxyResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRSTSDKProxyResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var r *rts.RtsSdkProxyResponse
 
 	switch v.ble.Version() {
-
 	case rtsV5:
 		t, ok := msg.(*rts.RtsConnection_5)
 		if !ok {
@@ -76,7 +75,6 @@ func handleRSTSDKProxyResponse(v *VectorBLE, msg interface{}) ([]byte, bool, err
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	resp := SDKProxyResponse{

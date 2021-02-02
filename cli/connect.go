@@ -47,5 +47,4 @@ func (c *conf) vectorConnect(args []string) {
 		log.Println("unable to set pin: ", err)
 		return
 	}
-
 }

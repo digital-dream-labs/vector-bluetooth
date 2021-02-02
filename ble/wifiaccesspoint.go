@@ -49,12 +49,10 @@ func (v *VectorBLE) WifiAccessPoint(enabled bool) (*WifiIPResponse, error) {
 	return &resp, err
 }
 
-func handleRSTWifiAccessPointResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRSTWifiAccessPointResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var sr *rts.RtsWifiAccessPointResponse
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -85,7 +83,6 @@ func handleRSTWifiAccessPointResponse(v *VectorBLE, msg interface{}) ([]byte, bo
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	resp := WifiAPResponse{

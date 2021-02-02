@@ -21,9 +21,9 @@ func (b *BLECrypto) SetNonces(msg *rts.RtsNonceMessage) error {
 }
 
 func (b *BLECrypto) nextEncryptNonce() {
-	C.sodium_increment((*C.uchar)(&b.encryptionNonce[0]), (C.size_t)(cryptoSecretBoxNonceBytes))
+	C.sodium_increment((*C.uchar)(&b.encryptionNonce[0]), C.size_t(cryptoSecretBoxNonceBytes))
 }
 
 func (b *BLECrypto) nextDecryptNonce() {
-	C.sodium_increment((*C.uchar)(&b.decryptionNonce[0]), (C.size_t)(cryptoSecretBoxNonceBytes))
+	C.sodium_increment((*C.uchar)(&b.decryptionNonce[0]), C.size_t(cryptoSecretBoxNonceBytes))
 }

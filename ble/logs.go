@@ -53,12 +53,10 @@ func (v *VectorBLE) DownloadLogs() (*LogResponse, error) {
 	return &resp, err
 }
 
-func handleRtsLogResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRtsLogResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var sr *rts.RtsLogResponse
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -89,7 +87,6 @@ func handleRtsLogResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	if sr.FileId != 0 {
@@ -102,11 +99,10 @@ func handleRtsLogResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
 	return nil, true, nil
 }
 
-func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var sr *rts.RtsFileDownload
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -140,7 +136,6 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) 
 	}
 
 	switch {
-
 	case sr.FileId != v.state.filedownload.FileID:
 		v.state.filedownload = filedownload{}
 		return nil, false, errors.New("invalid file")
@@ -177,7 +172,6 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) ([]byte, bool, error) 
 }
 
 func (v *VectorBLE) unBzip() (string, error) {
-
 	t := time.Now()
 	fn := t.Format(time.RFC3339)
 	output, err := os.OpenFile(
@@ -207,5 +201,4 @@ func (v *VectorBLE) unBzip() (string, error) {
 	_ = output.Close()
 
 	return fn + ".tar.gz", nil
-
 }

@@ -78,13 +78,4 @@ func (c *conf) configure() {
 	if err := c.v.ConfigureSettings(&v); err != nil {
 		fmt.Println("settings changes have failed: ", err)
 	}
-
-	/*data, err := json.MarshalIndent(resp, "", "  ")
-	if err != nil {
-		log.Println("unable to get status: ", err)
-		return
-	}
-
-	fmt.Println(string(data))
-	*/
 }

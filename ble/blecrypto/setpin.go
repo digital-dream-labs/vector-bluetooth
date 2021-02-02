@@ -17,7 +17,6 @@ const (
 
 // SetPin configures the hashes based on the pin entered
 func (b *BLECrypto) SetPin(pin string) error {
-
 	if b.remotePublicKey.Bytes == nil {
 		return errors.New("remote public key is not set")
 	}
@@ -40,15 +39,16 @@ func genHash(key, pin []byte) [32]byte {
 	return rv
 }
 
-func sodiumGenerichash(outlen int, in []byte, key []byte) ([]byte, int) {
+//nolint
+func sodiumGenerichash(outlen int, in, key []byte) ([]byte, int) {
 	out := make([]byte, outlen)
 	exit := int(C.crypto_generichash(
 		(*C.uchar)(&out[0]),
-		(C.size_t)(outlen),
+		C.size_t(outlen),
 		(*C.uchar)(bytePointer(in)),
-		(C.ulonglong)(len(in)),
+		C.ulonglong(len(in)),
 		(*C.uchar)(bytePointer(key)),
-		(C.size_t)(len(key))))
+		C.size_t(len(key))))
 
 	return out, exit
 }

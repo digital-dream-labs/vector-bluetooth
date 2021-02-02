@@ -7,24 +7,15 @@ import "C"
 
 // Encrypt encrypts an incoming message
 func (b *BLECrypto) Encrypt(msg []byte) ([]byte, error) {
-	/*
-		m := xchacha20poly1305ietf.Encrypt(
-			msg,
-			nil,
-			&b.encryptionNonce,
-			&b.encrypt,
-		)
-	*/
-
 	c := make([]byte, len(msg)+aBytes)
 
 	C.crypto_aead_xchacha20poly1305_ietf_encrypt(
 		(*C.uchar)(bytePointer(c)),
 		(*C.ulonglong)(nil),
 		(*C.uchar)(bytePointer(msg)),
-		(C.ulonglong)(len(msg)),
+		C.ulonglong(len(msg)),
 		(*C.uchar)(nil),
-		(C.ulonglong)(0),
+		C.ulonglong(0),
 		(*C.uchar)(nil),
 		(*C.uchar)(&b.encryptionNonce[0]),
 		(*C.uchar)(&b.encrypt[0]))

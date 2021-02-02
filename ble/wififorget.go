@@ -47,12 +47,10 @@ func (v *VectorBLE) WifiForget(ssid string) (*WifiIPResponse, error) {
 	return &resp, err
 }
 
-func handleRSTWifiForgetResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRSTWifiForgetResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var sr *rts.RtsWifiForgetResponse
 
 	switch v.ble.Version() {
-
 	case rtsV3:
 		t, ok := msg.(*rts.RtsConnection_3)
 		if !ok {
@@ -76,7 +74,6 @@ func handleRSTWifiForgetResponse(v *VectorBLE, msg interface{}) ([]byte, bool, e
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	resp := WifiForgetResponse{

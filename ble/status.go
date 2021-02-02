@@ -54,11 +54,9 @@ func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
 	return &resp, err
 }
 
-func handleRSTStatusResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRSTStatusResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	var sr StatusResponse
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -127,10 +125,8 @@ func handleRSTStatusResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	b, err := sr.Marshal()
 	return b, false, err
-
 }

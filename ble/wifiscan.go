@@ -56,12 +56,10 @@ func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
 	return &resp, err
 }
 
-func handleRSTWifiScanResponse(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
+func handleRSTWifiScanResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	nw := []*WifiNetwork{}
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -140,7 +138,6 @@ func handleRSTWifiScanResponse(v *VectorBLE, msg interface{}) ([]byte, bool, err
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	resp := WifiScanResponse{

@@ -4,12 +4,11 @@ import (
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
 
+//nolint
 func handleRTSChallengeMessage(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
-
 	var m uint32
 
 	switch v.ble.Version() {
-
 	case rtsV2:
 		t, ok := msg.(*rts.RtsConnection_2)
 		if !ok {
@@ -40,7 +39,6 @@ func handleRTSChallengeMessage(v *VectorBLE, msg interface{}) ([]byte, bool, err
 
 	default:
 		return handlerUnsupportedVersionError()
-
 	}
 
 	b, err := rts.BuildChallengeResponse(v.ble.Version(), m)
@@ -54,7 +52,7 @@ func handleRTSChallengeMessage(v *VectorBLE, msg interface{}) ([]byte, bool, err
 	return nil, true, nil
 }
 
-func handleRTSChallengeSuccessMessage(v *VectorBLE, msg interface{}) ([]byte, bool, error) {
+func handleRTSChallengeSuccessMessage(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
 	v.state.authorized = true
 	return nil, false, nil
 }

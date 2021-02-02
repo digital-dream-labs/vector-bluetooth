@@ -24,5 +24,4 @@ func (c *conf) getStatus() {
 	}
 
 	fmt.Println(string(data))
-
 }
