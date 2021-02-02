@@ -46,8 +46,17 @@ There are more features in the library than are currently available in the CLI, 
 |  ota-cancel | stops an in-progress OTA download |
 |  logs  | download logs from your robot  |
 
+### Configuration Options
+
+|  Name | Description  |
+| ------------ | ------------ |
+|  Timezone | Input a valid timezone. A handy list of timezone options are listed under the "TZ Database Name" column on [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) |
+|  Default Location | Input a valid location. Format is <City>/<State (if applicable)>/<Country> |
+|  Locale | Determines wake word ("Hey Vector") accent detection. Available options are listed in the [list_locales](https://github.com/digital-dream-labs/vector-bluetooth/blob/vector-bluetooth-listings/list_locales) file. |
+|  Data Analytics | Set to "true" to allow Vector to upload crash logs and other non-personal logs to DDL. Note: This data is not sold or released to any third party. |
+|  Distance Units | Set to "true" to measure distance in metric units. Set to "false" to measure distance in imperial units. |
+|  Temperature Units | Set to "true" to measure temperature in metric units. Set to "false" to measure distance in imperial units. |
 
 ### Project status
 
 This is an early release, and not all features are implemented in either the CLI or in the library itself.
-
