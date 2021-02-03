@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	scanDuration = 5 * time.Second
+	scanDuration = 3 * time.Second
 )
 
 // ScanResponse is a list of devices the BLE adaptor has found
@@ -34,18 +34,17 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 		),
 	)
 
-	h := newADVHandler(c)
-
-	_ = ble.Scan(
+	// This error is intentionally ignored.  If you were to do something with it,
+	// you'd get a deadline exceeded message every time.
+	_ = c.device.Scan(
 		ctx,
 		false,
-		h.scan,
-		discoverFilter(),
+		c.scan,
 	)
 
 	d := []*Device{}
 
-	for k, v := range c.scanresults {
+	for k, v := range c.scanresults.getresults() {
 		td := Device{
 			ID:      k,
 			Name:    v.name,
@@ -59,34 +58,4 @@ func (c *Connection) Scan() (*ScanResponse, error) {
 	}
 
 	return &resp, nil
-}
-
-type advhandler struct {
-	count int
-	conn  *Connection
-}
-
-func newADVHandler(conn *Connection) *advhandler {
-	return &advhandler{
-		count: 1,
-		conn:  conn,
-	}
-}
-
-func (a *advhandler) scan(d ble.Advertisement) {
-	if d.Connectable() {
-		if a.conn.scanresults != nil {
-			for _, v := range a.conn.scanresults {
-				if v.name == d.LocalName() {
-					return
-				}
-			}
-		}
-
-		a.conn.scanresults[a.count] = scanresult{
-			name: d.LocalName(),
-			addr: d.Address(),
-		}
-		a.count++
-	}
 }

@@ -6,7 +6,7 @@ const (
 
 // Send sends a message via BLE
 func (c *Connection) Send(buf []byte) error {
-	if c.encrypted {
+	if c.encrypted.Enabled() {
 		var err error
 		buf, err = c.crypto.Encrypt(buf)
 		if err != nil {

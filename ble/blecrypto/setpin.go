@@ -39,18 +39,17 @@ func genHash(key, pin []byte) [32]byte {
 	return rv
 }
 
-//nolint
-func sodiumGenerichash(outlen int, in, key []byte) ([]byte, int) {
-	out := make([]byte, outlen)
+func sodiumGenerichash(outlen int, in, key []byte) (hash []byte, bytes int) {
+	hash = make([]byte, outlen)
 	exit := int(C.crypto_generichash(
-		(*C.uchar)(&out[0]),
+		(*C.uchar)(&hash[0]),
 		C.size_t(outlen),
 		(*C.uchar)(bytePointer(in)),
 		C.ulonglong(len(in)),
 		(*C.uchar)(bytePointer(key)),
 		C.size_t(len(key))))
 
-	return out, exit
+	return hash, exit
 }
 
 func bytePointer(b []byte) *uint8 {

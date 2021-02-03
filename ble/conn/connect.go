@@ -42,7 +42,7 @@ func (c *Connection) Connect(id int) error {
 	if err != nil {
 		return err
 	}
-	c.established = true
+	c.established.Enable()
 
 	go c.handleIncoming()
 	return nil
@@ -57,9 +57,9 @@ func (c *Connection) bleConnect(id int) error {
 		),
 	)
 
-	cln, err := ble.Connect(
+	cln, err := c.device.Dial(
 		ctx,
-		deviceFilter(c.scanresults[id].addr),
+		c.scanresults.getresult(id),
 	)
 	if err != nil {
 		return err
@@ -133,17 +133,17 @@ func (c *Connection) handleIncoming() {
 			continue
 		}
 		switch {
-		case !c.connected:
+		case !c.connected.Enabled():
 			c.handleConnectionRequest(incoming)
-		case !c.encrypted && c.connected:
+		case !c.encrypted.Enabled() && c.connected.Enabled():
 			c.out <- b
-		case c.encrypted && c.connected:
+		case c.encrypted.Enabled() && c.connected.Enabled():
 			buf, _ := c.crypto.DecryptMessage(b)
 			// IDEA:  should this reset everything?
 			c.out <- buf
 		default:
-			c.established = false
-			c.encrypted = false
+			c.established.Disable()
+			c.encrypted.Disable()
 		}
 	}
 }
@@ -161,7 +161,7 @@ func (c *Connection) handleConnectionRequest(buffer []byte) {
 		return
 	}
 
-	c.connected = true
+	c.connected.Enable()
 	c.version = int(buffer[2])
 }
 
