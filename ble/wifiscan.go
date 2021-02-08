@@ -33,7 +33,7 @@ func (sr *WifiScanResponse) Unmarshal(b []byte) error {
 
 // WifiScan sends a WifiScan message to the vector robot
 func (v *VectorBLE) WifiScan() (*WifiScanResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

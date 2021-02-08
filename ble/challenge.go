@@ -53,6 +53,6 @@ func handleRTSChallengeMessage(v *VectorBLE, msg interface{}) ([]byte, bool, err
 }
 
 func handleRTSChallengeSuccessMessage(v *VectorBLE, msg interface{}) (data []byte, cont bool, err error) {
-	v.state.authorized = true
+	v.state.setAuth(true)
 	return nil, false, nil
 }

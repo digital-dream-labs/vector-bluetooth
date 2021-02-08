@@ -30,7 +30,7 @@ func (sr *LogResponse) Unmarshal(b []byte) error {
 
 // DownloadLogs is an appropriately named function.
 func (v *VectorBLE) DownloadLogs() (*LogResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 
@@ -90,10 +90,12 @@ func handleRtsLogResponse(v *VectorBLE, msg interface{}) (data []byte, cont bool
 	}
 
 	if sr.FileId != 0 {
-		v.state.filedownload = filedownload{
-			FileID: sr.FileId,
-			//File:   f,
-		}
+		v.state.setFiledownload(
+			filedownload{
+				FileID: sr.FileId,
+				//File:   f,
+			},
+		)
 	}
 
 	return nil, true, nil
@@ -135,9 +137,16 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 		return handlerUnsupportedVersionError()
 	}
 
+	v.sendLogStatus(
+		&statusCounter{
+			PacketNumber: sr.PacketNumber,
+			PacketTotal:  sr.PacketTotal,
+		},
+	)
+
 	switch {
 	case sr.FileId != v.state.filedownload.FileID:
-		v.state.filedownload = filedownload{}
+		v.state.setFiledownload(filedownload{})
 		return nil, false, errors.New("invalid file")
 
 	case sr.PacketNumber < sr.PacketTotal:
@@ -161,7 +170,7 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 			return nil, false, errors.New("fatal error")
 		}
 
-		v.state.filedownload = filedownload{}
+		v.state.setFiledownload(filedownload{})
 
 		return b, false, nil
 

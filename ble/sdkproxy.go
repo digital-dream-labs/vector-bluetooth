@@ -33,13 +33,13 @@ func (sr *SDKProxyResponse) Unmarshal(b []byte) error {
 
 // SDKProxy sends a BLE-tunneled SDK request
 func (v *VectorBLE) SDKProxy(settings *SDKProxyRequest) (*SDKProxyResponse, error) {
-	if !v.state.authorized || v.state.clientGUID == "" {
+	if !v.state.getAuth() || v.state.getClientGUID() == "" {
 		return nil, errors.New(errNotAuthorized)
 	}
 
 	msg, err := rts.BuildSDKMessage(
 		v.ble.Version(),
-		v.state.clientGUID,
+		v.state.getClientGUID(),
 		"1",
 		settings.URLPath,
 		settings.Body,

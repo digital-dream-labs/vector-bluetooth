@@ -26,7 +26,7 @@ func (sr *WifiIPResponse) Unmarshal(b []byte) error {
 
 // WifiIP sends a WifiIP message to the vector robot
 func (v *VectorBLE) WifiIP() (*WifiIPResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

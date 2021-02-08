@@ -46,7 +46,7 @@ func handleRTSNonceRequest(v *VectorBLE, msg interface{}) (data []byte, cont boo
 		return nil, false, err
 	}
 
-	v.state.nonceResponse = b
+	v.state.setNonce(b)
 
 	return nil, false, nil
 }

@@ -27,7 +27,7 @@ func (sr *WifiConnectResponse) Unmarshal(b []byte) error {
 
 // WifiConnect sends a wifi connect message to the robot
 func (v *VectorBLE) WifiConnect(ssid, password string, timeout, authtype int) (*WifiConnectResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

@@ -8,7 +8,7 @@ import (
 
 // OTACancel sends a OTACancel message to the vector robot
 func (v *VectorBLE) OTACancel() ([]byte, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 	msg, err := rts.BuildOTACancelMessage(v.ble.Version())

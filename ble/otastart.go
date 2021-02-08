@@ -24,7 +24,7 @@ func (sr *OTAStartResponse) Unmarshal(b []byte) error {
 
 // OTAStart sends a OTAStart message to the vector robot
 func (v *VectorBLE) OTAStart(url string) (*OTAStartResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 
@@ -85,10 +85,21 @@ func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) (data []byte, con
 		return handlerUnsupportedVersionError()
 	}
 
+	v.sendOTAStatus(
+		&statusCounter{
+			PacketNumber: uint32(m.Current),
+			PacketTotal:  uint32(m.Expected),
+		},
+	)
+
 	resp := OTAStartResponse{
 		Status: int(m.Status),
 	}
-
 	b, err := resp.Marshal()
+
+	if resp.Status == 1 || resp.Status == 2 {
+		return b, true, err
+	}
+
 	return b, false, err
 }

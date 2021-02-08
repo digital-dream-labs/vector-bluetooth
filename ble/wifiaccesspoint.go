@@ -26,7 +26,7 @@ func (sr *WifiAPResponse) Unmarshal(b []byte) error {
 
 // WifiAccessPoint sends a WifiAccessPoint message to the vector robot
 func (v *VectorBLE) WifiAccessPoint(enabled bool) (*WifiIPResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

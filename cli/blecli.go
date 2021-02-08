@@ -11,19 +11,23 @@ import (
 )
 
 type conf struct {
-	v *ble.VectorBLE
+	v      *ble.VectorBLE
+	status chan ble.StatusChannel
 }
 
 // BLEShell starts the bluetooth interactive shell
 func BLEShell() {
+	sc := make(chan ble.StatusChannel)
 	v, err := ble.New(
 		ble.WithLogDirectory("."),
+		ble.WithStatusChan(sc),
 	)
 	if err != nil {
 		log.Fatal(err)
 	}
 	c := conf{
-		v: v,
+		v:      v,
+		status: sc,
 	}
 
 	reader := bufio.NewReader(os.Stdin)

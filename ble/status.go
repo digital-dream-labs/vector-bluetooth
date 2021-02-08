@@ -32,7 +32,7 @@ func (sr *StatusResponse) Unmarshal(b []byte) error {
 
 // GetStatus sends a GetStatus message to the vector robot
 func (v *VectorBLE) GetStatus() (*StatusResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

@@ -11,10 +11,11 @@ const (
 
 // VectorBLE contains the information required to connect, etc
 type VectorBLE struct {
-	bleReader chan []byte
-	ble       bleconn
-	state     state
-	logdir    string
+	bleReader  chan []byte
+	ble        bleconn
+	state      state
+	logdir     string
+	statuschan chan StatusChannel
 }
 
 type bleconn interface {
@@ -31,14 +32,6 @@ type bleconn interface {
 	Version() int
 	Reset()
 }
-
-type state struct {
-	nonceResponse []byte
-	authorized    bool
-	clientGUID    string
-	filedownload  filedownload
-}
-
 type filedownload struct {
 	FileID      uint32
 	PacketTotal uint32
@@ -67,9 +60,10 @@ func New(opts ...Option) (*VectorBLE, error) {
 	}
 
 	v := VectorBLE{
-		bleReader: bleReader,
-		ble:       b,
-		logdir:    cfg.outputDir,
+		bleReader:  bleReader,
+		ble:        b,
+		logdir:     cfg.outputDir,
+		statuschan: cfg.statuschan,
 	}
 
 	return &v, nil

@@ -17,6 +17,8 @@ func (c *conf) startOTA(args []string) {
 		return
 	}
 
+	go c.renderOTAStatus()
+
 	resp, err := c.v.OTAStart(args[1])
 	if err != nil {
 		log.Println("unable to get status: ", err)

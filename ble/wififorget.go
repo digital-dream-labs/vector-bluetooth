@@ -24,7 +24,7 @@ func (sr *WifiForgetResponse) Unmarshal(b []byte) error {
 
 // WifiForget sends a WifiForget message to the vector robot
 func (v *VectorBLE) WifiForget(ssid string) (*WifiIPResponse, error) {
-	if !v.state.authorized {
+	if !v.state.getAuth() {
 		return nil, errors.New(errNotAuthorized)
 	}
 

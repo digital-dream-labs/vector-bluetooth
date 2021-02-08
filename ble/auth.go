@@ -59,7 +59,7 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 		return nil, errors.New("authorization failed")
 	}
 
-	v.state.clientGUID = resp.ClientTokenGUID
+	v.state.setClientGUID(resp.ClientTokenGUID)
 
 	return &resp, err
 }

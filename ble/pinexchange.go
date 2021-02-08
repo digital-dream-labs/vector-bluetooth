@@ -6,7 +6,7 @@ func (v *VectorBLE) SendPin(pin string) error {
 		return err
 	}
 
-	if err := v.ble.Send(v.state.nonceResponse); err != nil {
+	if err := v.ble.Send(v.state.getNonce()); err != nil {
 		return err
 	}
 	v.ble.EnableEncryption()
