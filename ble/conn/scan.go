@@ -25,8 +25,6 @@ type Device struct {
 
 // Scan looks for BLE devices matching the vector requirements
 func (c *Connection) Scan() (*ScanResponse, error) {
-	//c.Reset()
-
 	ctx := ble.WithSigHandler(
 		context.WithTimeout(
 			context.Background(),
