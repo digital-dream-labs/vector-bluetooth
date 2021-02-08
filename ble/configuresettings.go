@@ -21,6 +21,9 @@ type VectorSettings struct {
 	AllowDataAnalytics bool   `json:"allow_data_analytics,omitempty"`
 	MetricDistance     bool   `json:"metric_distance,omitempty"`
 	MetricTemperature  bool   `json:"metric_temperature,omitempty"`
+	ButtonWakeword     bool   `json:"button_wakeword,omitempty"`
+	Clock24Hour        bool   `json:"clock_24_hour,omitempty"`
+	AlexaOptIn         bool   `json:"alexaOptIn,omitempty"`
 }
 
 type updateAccountSettings struct {

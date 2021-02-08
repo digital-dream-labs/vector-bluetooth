@@ -75,6 +75,41 @@ func (c *conf) configure() {
 		break
 	}
 
+	for {
+		fmt.Print("Would you like to enable alexa support? (true|false): ")
+		text, _ := reader.ReadString('\n')
+		b, err := strconv.ParseBool(strings.ReplaceAll(text, "\n", ""))
+		if err != nil {
+			continue
+		}
+		v.AlexaOptIn = b
+		break
+	}
+
+	if v.AlexaOptIn {
+		for {
+			fmt.Print("Would you like the button to activate alexa? (true|false): ")
+			text, _ := reader.ReadString('\n')
+			b, err := strconv.ParseBool(strings.ReplaceAll(text, "\n", ""))
+			if err != nil {
+				continue
+			}
+			v.ButtonWakeword = b
+			break
+		}
+	}
+
+	for {
+		fmt.Print("Would you like your clock to be displayed in 24 hour format? (true|false): ")
+		text, _ := reader.ReadString('\n')
+		b, err := strconv.ParseBool(strings.ReplaceAll(text, "\n", ""))
+		if err != nil {
+			continue
+		}
+		v.Clock24Hour = b
+		break
+	}
+
 	if err := c.v.ConfigureSettings(&v); err != nil {
 		fmt.Println("settings changes have failed: ", err)
 	}

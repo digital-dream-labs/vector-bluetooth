@@ -6,9 +6,9 @@ import (
 	"github.com/currantlabs/ble"
 )
 
-func (c *Connection) scan(d ble.Advertisement) {
+func (conn *Connection) scan(d ble.Advertisement) {
 	if d.Connectable() {
-		c.scanresults.put(d)
+		conn.scanresults.put(d)
 	}
 }
 
