@@ -2,17 +2,17 @@ package ble
 
 // StatusChannel is a general struct containing status updates for things like OTA + log downloading
 type StatusChannel struct {
-	LogStatus *statusCounter
-	OTAStatus *statusCounter
+	LogStatus *StatusCounter
+	OTAStatus *StatusCounter
 }
 
-type statusCounter struct {
+type StatusCounter struct {
 	PacketNumber uint32
 	PacketTotal  uint32
 	Error        string
 }
 
-func (v *VectorBLE) sendLogStatus(arg *statusCounter) {
+func (v *VectorBLE) sendLogStatus(arg *StatusCounter) {
 	if v.statuschan == nil {
 		return
 	}
@@ -21,7 +21,7 @@ func (v *VectorBLE) sendLogStatus(arg *statusCounter) {
 	}
 }
 
-func (v *VectorBLE) sendOTAStatus(arg *statusCounter) {
+func (v *VectorBLE) sendOTAStatus(arg *StatusCounter) {
 	if v.statuschan == nil {
 		return
 	}

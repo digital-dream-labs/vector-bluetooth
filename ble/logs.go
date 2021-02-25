@@ -138,7 +138,7 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 	}
 
 	v.sendLogStatus(
-		&statusCounter{
+		&StatusCounter{
 			PacketNumber: sr.PacketNumber,
 			PacketTotal:  sr.PacketTotal,
 		},

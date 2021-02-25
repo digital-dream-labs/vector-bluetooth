@@ -86,7 +86,7 @@ func handleRSTOtaUpdateResponse(v *VectorBLE, msg interface{}) (data []byte, con
 	}
 
 	v.sendOTAStatus(
-		&statusCounter{
+		&StatusCounter{
 			PacketNumber: uint32(m.Current),
 			PacketTotal:  uint32(m.Expected),
 		},
