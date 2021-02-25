@@ -9,6 +9,7 @@ type StatusChannel struct {
 type statusCounter struct {
 	PacketNumber uint32
 	PacketTotal  uint32
+	Error        string
 }
 
 func (v *VectorBLE) sendLogStatus(arg *statusCounter) {
