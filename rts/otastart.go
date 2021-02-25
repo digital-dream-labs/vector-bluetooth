@@ -7,7 +7,7 @@ func BuildOTAStartMessage(version int, url string) ([]byte, error) {
 	switch version {
 	case rtsv2:
 		return buildMessage2(
-			NewRtsConnection_2WithRtsOtaStartRequest(
+			NewRtsConnection_2WithRtsOtaUpdateRequest(
 				&RtsOtaUpdateRequest{
 					Url: url,
 				},
@@ -15,7 +15,7 @@ func BuildOTAStartMessage(version int, url string) ([]byte, error) {
 		)
 	case rtsv3:
 		return buildMessage3(
-			NewRtsConnection_3WithRtsOtaStartRequest(
+			NewRtsConnection_3WithRtsOtaUpdateRequest(
 				&RtsOtaUpdateRequest{
 					Url: url,
 				},
@@ -23,7 +23,7 @@ func BuildOTAStartMessage(version int, url string) ([]byte, error) {
 		)
 	case rtsv4:
 		return buildMessage4(
-			NewRtsConnection_4WithRtsOtaStartRequest(
+			NewRtsConnection_4WithRtsOtaUpdateRequest(
 				&RtsOtaUpdateRequest{
 					Url: url,
 				},
