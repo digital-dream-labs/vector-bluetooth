@@ -2,7 +2,6 @@ package ble
 
 import (
 	"bytes"
-	"compress/bzip2"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -156,7 +155,7 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 	case sr.PacketNumber == sr.PacketTotal:
 		v.state.filedownload.Buffer = append(v.state.filedownload.Buffer, sr.FileChunk...)
 
-		fn, err := v.unBzip()
+		fn, err := v.writeFile()
 		if err != nil {
 			return nil, false, errors.New("fatal error")
 		}
@@ -180,11 +179,11 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 	}
 }
 
-func (v *VectorBLE) unBzip() (string, error) {
+func (v *VectorBLE) writeFile() (string, error) {
 	t := time.Now()
 	fn := t.Format(time.RFC3339)
 	output, err := os.OpenFile(
-		fmt.Sprintf("%s/%s.tar.gz", v.logdir, fn),
+		fmt.Sprintf("%s/%s.tar.bz2", v.logdir, fn),
 		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0600,
 	)
@@ -192,22 +191,10 @@ func (v *VectorBLE) unBzip() (string, error) {
 		return "", err
 	}
 
-	buf := make([]byte, len(v.state.filedownload.Buffer))
+	buf := bytes.NewReader(v.state.filedownload.Buffer)
+	io.Copy(output, buf)
 
-	r := bzip2.NewReader(
-		bytes.NewReader(v.state.filedownload.Buffer),
-	)
+	defer output.Close()
 
-	_, err = r.Read(buf)
-	if err != nil && err != io.EOF {
-		return "", err
-	}
-
-	if _, err := output.Write(buf); err != nil {
-		return "", err
-	}
-
-	_ = output.Close()
-
-	return fn + ".tar.gz", nil
+	return fn + ".tar.bz2", nil
 }
