@@ -180,10 +180,11 @@ func handleRtsFileDownload(v *VectorBLE, msg interface{}) (data []byte, cont boo
 }
 
 func (v *VectorBLE) writeFile() (string, error) {
-	t := time.Now()
-	fn := t.Format(time.RFC3339)
+	now := time.Now().Format(time.RFC3339)
+	filename := fmt.Sprintf("%s/%s.tar.bz2", v.logdir, now)
+
 	output, err := os.OpenFile(
-		fmt.Sprintf("%s/%s.tar.bz2", v.logdir, fn),
+		filename,
 		os.O_APPEND|os.O_RDWR|os.O_CREATE,
 		0600,
 	)
@@ -191,10 +192,12 @@ func (v *VectorBLE) writeFile() (string, error) {
 		return "", err
 	}
 
-	buf := bytes.NewReader(v.state.filedownload.Buffer)
-	io.Copy(output, buf)
-
 	defer output.Close()
 
-	return fn + ".tar.bz2", nil
+	buf := bytes.NewReader(v.state.filedownload.Buffer)
+	if _, err := io.Copy(output, buf); err != nil {
+		return "", err
+	}
+
+	return filename, nil
 }
