@@ -25,7 +25,7 @@ Completely untested, but let me know!
 
 ## Running on Windows
 
-Doesn't work yet...
+Currently unavailable in Windows- there are no Go wrappers for Bluetooth in Windows due to the way Bluetooth is handled by Windows, hence why this is not implemented yet.
 
 ### CLI
 
