@@ -35,7 +35,7 @@ There are more features in the library than are currently available in the CLI, 
 | ------------ | ------------ |
 |  scan | runs a BLE scan and displays an appropriate list of devices  |
 |  connect | connect to a vector via ID (displayed in the scan)  |
-|  authorize | performs a cloud authorization (but you'll need to find your token!)  |
+|  authorize | performs a cloud authorization (but you'll need to find your token- via SSH in your robot, do "cat /data/data/com.anki.victor/persistent/token/token.jwt")  |
 |  configure | allows you to make/change configuration  |
 |  get-status | displays the status of your vector  |
 |  wifi-scan | scan for a list of available wifi networks  |
