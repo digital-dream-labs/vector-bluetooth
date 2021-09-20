@@ -3,6 +3,7 @@ package ble
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/digital-dream-labs/vector-bluetooth/rts"
 )
@@ -52,8 +53,10 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 
 	resp := AuthResponse{}
 	if err := resp.Unmarshal(b); err != nil {
+		fmt.Printf("err resp: %+v\n", resp)
 		return nil, err
 	}
+	fmt.Printf("resp: %+v\n", resp)
 
 	if !resp.Success {
 		return nil, errors.New("authorization failed")
