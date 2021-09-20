@@ -50,7 +50,8 @@ func (v *VectorBLE) Auth(key string) (*AuthResponse, error) {
 	}
 
 	b, err := v.watch()
-	fmt.Printf("b: %s", b)
+	fmt.Printf("b: %s\n", b)
+	fmt.Printf("err: %+v\n", err)
 
 	resp := AuthResponse{}
 	if err := resp.Unmarshal(b); err != nil {
